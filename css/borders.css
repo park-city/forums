@@ -1,0 +1,57 @@
+
+/* All cells have border by default */
+
+table.outline>tbody>tr>td:not(.safe) {
+	border-width:0px 1px 1px 0px;
+	border-style:solid;
+}
+
+table.outline>tbody:first-child>tr:first-child>td:not(.safe) {
+	border-top-width:1px;
+}
+table.outline>tbody>tr>td:first-child:not(.safe) {
+	border-left-width:1px;
+}
+
+table.outline>tbody>tr>th:not(.safe)
+{
+	border-width: 0px 0px 1px 0px;
+	border-style:solid;
+}
+
+table.outline>tbody>tr>th:last-child:not(.safe) {
+	border-right-width: 1px;
+}
+table.outline>tbody>tr>th:first-child:not(.safe) {
+	border-left-width: 1px;
+}
+table.outline>tbody:first-child>tr:first-child>th:not(.safe) {
+	border-top-width: 1px;
+}
+
+
+table.post>tbody>tr>td:not(.safe) {
+	border-style:solid;
+}
+table.post>tbody>tr>td.side:not(.safe) {
+	border-width: 0px 0px 1px 1px;
+}
+table.post>tbody>tr>td.post:not(.safe) {
+	border-width: 1px 1px 1px 1px;
+}
+table.post>tbody>tr>td.meta:not(.safe) {
+	border-width: 1px 1px 0px 0px;
+}
+table.post>tbody>tr>td.userlink:not(.safe) {
+	border-width: 1px 0px 0px 1px;
+}
+
+
+table.deletedpost>tbody>tr>td.meta:not(.safe) {
+	border-width: 1px 1px 1px 0px;
+}
+table.deletedpost>tbody>tr>td.side:not(.safe) {
+	border-width: 1px 0px 1px 1px;
+}
+
+

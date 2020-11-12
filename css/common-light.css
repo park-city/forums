@@ -1,0 +1,29 @@
+@import url('/css/common.css');
+
+body,div.spoiler div.spoiled {
+	background:#fff;
+	color:#000;
+}
+
+/*table,td,tr,th,div { border-color:black; }*/
+
+a,a:visited,a:active { color: #05d; }
+a:hover,a:hover span { text-decoration: underline; }
+
+.newMarker { color: #ffdd1f; text-shadow: 1px 1px rgb(140, 99, 0); }
+.userlink,:not(.safe) .shado { 
+	text-shadow: 1px 1px 0px rgba(0,0,0,0.2);
+}
+
+div.quote div.quotecontent {
+	border-color:#CCC;
+}
+
+.themeselector input:checked + label, .fe_selected {
+	outline: 1px solid rgba(0, 0, 0, 0.25);
+	background: rgba(0, 0, 0, 0.25);
+}
+
+.mobile-postheader {
+	color: rgba(0,0,0,0.5);
+}

@@ -1,0 +1,36 @@
+@import url('/css/common.css');
+
+body,div.spoiler div.spoiled {
+	background:#000;
+	color:#fff;
+}
+
+table,td,tr,th,div { border-color:black; }
+
+a:link,a:visited,a:active { color: #ffc040; }
+a:hover,a span:hover { color: #fff; }
+
+.newMarker { color: #FFF700; text-shadow: 1px 1px 0px #8C6300; }
+
+input,select,textarea,button { background: rgba(0,0,0,0.35); color: white; border: 0 none; }
+
+.themeselector input:checked + label, .fe_selected {
+	outline: 1px solid rgba(255, 255, 255, 0.5);
+	background: rgba(0, 0, 0, 0.5);
+}
+
+/* syndromes */
+.rein0{color:#83F3A3;}
+.rein1{color:#FFE323;}
+.rein2{color:#FF5353;}
+.rein3{color:#CE54CE;}
+.rein4{color:#8383CE;}
+.woo0{color:#BBAAFF;}
+.woo1{color:#FFB0FF;}
+.woo2{color:#FFB070;}
+.woo3{color:#C8C0B8;}
+.woo4{color:#A0A0A0;}
+
+.mobile-postheader {
+	color: rgba(255,255,255,0.5);
+}

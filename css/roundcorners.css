@@ -1,0 +1,70 @@
+
+/* POST TABLES */
+table.post:not(.safe), input,select,textarea,button {
+	border-radius: 8px;
+}
+
+table.post>tbody>tr>td.side:not(.safe) {
+	border-bottom-left-radius: 8px;
+}
+
+table.post>tbody>tr>td.post:not(.safe) {
+	border-bottom-right-radius: 8px;
+}
+
+table.post>tbody>tr>td.meta:not(.safe) {
+	border-top-right-radius: 8px;
+}
+
+table.post>tbody>tr>td.userlink:not(.safe) {
+	border-top-left-radius: 8px;
+	border-bottom-left-radius: 0px;
+}
+
+/* DELETED POST TABLES */
+
+table.deletedpost>tbody>tr>td.meta:not(.safe) {
+	border-top-right-radius: 8px;
+	border-bottom-right-radius: 8px;
+}
+table.deletedpost>tbody>tr>td.side:not(.safe) {
+	border-top-left-radius: 8px;
+	border-bottom-left-radius: 8px;
+}
+
+
+
+/* OUTLINE TABLES */
+
+table.outline:not(.safe)
+{
+	border-radius: 8px;
+}
+table.outline > tbody:first-child > tr:first-child > th:first-child:not(.safe), 
+table.outline > tbody:first-child > tr:first-child > td:first-child:not(.safe)
+{
+	border-top-left-radius: 8px;
+}
+
+table.outline > tbody:first-child > tr:first-child > th:last-child:not(.safe), 
+table.outline > tbody:first-child > tr:first-child > td:last-child:not(.safe)
+{
+	border-top-right-radius: 8px;
+}
+
+table.outline tr:last-child td:last-child:not(.safe)
+{
+	border-bottom-right-radius: 8px;
+}
+
+table.outline tr:last-child td:first-child:not(.safe)
+{
+	border-bottom-left-radius: 8px;
+}
+
+/* Misc stuff */
+
+button.expander
+{
+	border-radius: 8px;
+}

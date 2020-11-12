@@ -1,0 +1,5 @@
+.container { padding: 2px; }
+
+.width75,.width50,.width25 { width: 100% !important; }
+
+input,button,textarea,select { padding: 5px; }
