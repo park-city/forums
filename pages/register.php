@@ -1,14 +1,11 @@
 <?php
 
-$title = "Register";
+die(header("Location: https://forum.park-city.club/?page=register"));
 
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry("Register", "register"));
-makeBreadcrumbs($crumbs);
+/*$title = "Register";
 
-$haveSecurimage = is_file("securimage/securimage.php");
-if($haveSecurimage)
-	session_start();
+$crumbo = array($title => actionLink('register'));
+$layout_crumbs = MakeCrumbs($crumbo);
 
 if(isset($_POST['name']))
 {
@@ -38,17 +35,10 @@ if(isset($_POST['name']))
 		$err = "The username must not be empty. Please choose one.";
 	else if(strpos($name, ";") !== false)
 		$err = "The username cannot contain semicolons.";
-	//elseif($ipKnown >= 2)
-	//	$err = "Another user is already using this IP address.";
+	elseif($ipKnown >= 2)
+		$err = "Another user is already using this IP address.";
 	else if ($_POST['pass'] !== $_POST['pass2'])
 		$err = "The passwords you entered don't match.";
-	else if($haveSecurimage)
-	{
-		include("securimage/securimage.php");
-		$securimage = new Securimage();
-		if($securimage->check($_POST['captcha_code']) == false)
-			$err = "You got the CAPTCHA wrong.";
-	}
 
 	if($err)
 	{
@@ -117,21 +107,6 @@ echo "
 				<span class=\"smallFonts\">Not required, but used for password resets. Hidden to everyone.</span>
 			</td>
 		</tr>";
-
-if($haveSecurimage)
-{
-	echo "
-		<tr>
-			<td class=\"cell2\">
-				r u human
-			</td>
-			<td class=\"cell1\">
-				<img width=\"200\" height=\"80\" id=\"captcha\" src=\"".actionLink("captcha", shake())."\" alt=\"CAPTCHA Image\" />
-				<button onclick=\"document.getElementById('captcha').src = '".actionLink("captcha", shake())."?' + Math.random(); return false;\">New</button><br />
-				<input type=\"text\" name=\"captcha_code\" size=\"10\" maxlength=\"6\" class=\"required\" />
-			</td>
-		</tr>";
-}
 
 echo "
 		<tr class=\"cell2 center\">

@@ -1,4 +1,5 @@
 <?php
+if(!defined('DINNER')) die();
 
 include_once("write.php");
 
@@ -152,65 +153,62 @@ function makePostText($post)
 }
 
 define('POST_NORMAL', 0);			// standard post box
-define('POST_PM', 1);				// PM post box
+define('POST_PM', 1);				// PM post box. unused lol
 define('POST_DELETED_SNOOP', 2);	// post box with close/undelete (for mods 'view deleted post' feature)
-define('POST_SAMPLE', 3);			// sample post box (profile sample post, newreply post preview, etc)
-define('POST_PROFILE', 4);
+define('POST_SAMPLE', 3);			// sample post (preview box, profiles)
 
 function makePostLinks($post, $type, $params=array())
 {
 	global $loguser, $loguserid, $mobileLayout;
-
-	if($params['lynx'])
+	
+	if($type == POST_SAMPLE)
+		return '';
+	
+	$forum = $params['fid'];
+	$thread = $params['tid'];
+	$canMod = CanMod($loguserid, $forum);
+	$canReply = ($canMod || (!$post['closed'] && $loguser['powerlevel'] > -1)) && $loguserid;
+	
+	$links = '<div style="float:right;"><ul class="pipemenu">';
+	
+	if($post['deleted'])
 	{
-		$links = $params['lynx'];
+		if($canMod)
+			$links .= '<li><a href="" onclick="deletePost('.$post["id"].', \''.$loguser["token"].'\', 2);return false;">Undelete</a></li>';
+
+		if($canMod || $post["u_id"] == $loguserid)
+		{
+			if($type == POST_DELETED_SNOOP)
+				$links .= '<li><a href="" onclick="replacePost('.$post["id"].', false); return false;">Hide</a></li>';
+			else
+				$links .= '<li><a href="" onclick="replacePost('.$post["id"].', true); return false;">View</a></li>';
+		}
 	}
 	else
 	{
-		$forum = $params['fid'];
-		$thread = $params['tid'];
-		$canMod = CanMod($loguserid, $forum);
-		$canReply = ($canMod || (!$post['closed'] && $loguser['powerlevel'] > -1)) && $loguserid;
+		$links .= actionLinkTagItem('Link', "post", $post['id'], "", "link");
 
-		$links = new PipeMenu();
-		
-		if($post['deleted'])
+		if ($canReply && !$params['noreplylinks'])
+			$links .= actionLinkTagItem('Reply', "newreply", $thread, "quote=".$post['id'], "quote-left");
+
+		if ($canMod || ($post['user'] == $loguserid && $loguser['powerlevel'] > -1 && !$post['closed']))
+			$links .= actionLinkTagItem('Edit', "editpost", $post['id'], "", "pencil");
+
+		if ($canMod || $post['user'] == $loguserid && $loguser['powerlevel'] > -1)
 		{
-			if($canMod || ($post["u_id"] == $loguserid && $post["deletedby"] == $loguserid))
-				$links->add(new PipeMenuLinkEntry('Restore', "", "", "", "undo", "deletePost(".$post["id"].", '".$loguser["token"]."', 2);return false;"));
-
-			if($canMod || $post["u_id"] == $loguserid)
-			{
-				if($type == POST_DELETED_SNOOP)
-					$links->add(new PipeMenuLinkEntry('Close', "", "", "", "chevron-up", "replacePost(".$post['id'].", false); return false;"));
-				else
-					$links->add(new PipeMenuLinkEntry('View', "", "", "", "chevron-down", "replacePost(".$post['id'].", true); return false;"));
-			}
+			$links .= '<li><a href="" onclick="deletePost('.$post["id"].', \''.$loguser["token"].'\', 1);return false;">Delete</a></li>';
 		}
-		else
+
+		if(!$mobileLayout)
 		{
-			$links->add(new PipeMenuLinkEntry('Link', "post", $post['id'], "", "link"));
+			$links .= '<li>'.format('#{0}', $post['id']).'</li>';
 
-			if ($canReply && !$params['noreplylinks'])
-				$links->add(new PipeMenuLinkEntry('Reply', "newreply", $thread, "quote=".$post['id'], "quote-left"));
-	
-			if ($canMod || ($post['user'] == $loguserid && $loguser['powerlevel'] > -1 && !$post['closed']))
-				$links->add(new PipeMenuLinkEntry('Edit', "editpost", $post['id'], "", "pencil"));
-
-			if ($post['user'] == $loguserid && $loguser['powerlevel'] > -1)
-				$links->add(new PipeMenuLinkEntry('Delete', "", "", "", "remove", "deletePost(".$post["id"].", '".$loguser["token"]."', 1);return false;"));
-			else if ($canMod)
-				$links->add(new PipeMenuLinkEntry('Delete', "", "", "", "remove", "deletePost(".$post["id"].", '".$loguser["token"]."', 1);return false;"));
-
-			if(!$mobileLayout && $type != 3)
-			{
-				$links->add(new PipeMenuTextEntry(format('#{0}', $post['id'])));
-
-				if ($canMod)
-					$links->add(new PipeMenuTextEntry($post['ip']));
-			}
+			if ($canMod)
+				$links .= '<li>'.$post['ip'].'</li>';
 		}
 	}
+	
+	$links .= '</ul></div>';
 
 	return $links;
 }
@@ -232,13 +230,15 @@ function makePost($post, $type, $params=array())
 	$poster = getDataPrefix($post, "u_");
 	LoadBlockLayouts();
 	$isBlocked = $poster['globalblock'] || $loguser['blocklayouts'] || $post['options'] & 1 || isset($blocklayouts[$poster['id']]);
+	
+	if(!$poster['name']) $deaduser = true;
 
 	$links = makePostLinks($post, $type, $params);
 	
 	$pictureUrl = '';
 	$pronouns = '';
 	
-	// avatar
+	// Avatar
 	if($post['mood'] > 0)
 	{
 		if(file_exists("${dataDir}avatars/".$poster['id']."_".$post['mood']))
@@ -252,18 +252,14 @@ function makePost($post, $type, $params=array())
 			$pictureUrl = $poster["picture"];
 	}
 	
-	// post count
-	
+	// Post count
 	if(!$params['forcepostnum'] && $type == POST_SAMPLE)
 		$metaposts = $poster['posts'];
 	else
 		$metaposts = $post['num']."/".$poster['posts'];
-		
-	// mobile shit
 	
+	// Mobile shit
 	if($mobileLayout) {
-		$links->setClass("toolbarMenu");
-		
 		if($pictureUrl)
 			$picture = '<a href="/?page=profile&id='.$poster['id'].'"><img src="'.htmlspecialchars($pictureUrl).'"></a>';
 		else
@@ -271,6 +267,15 @@ function makePost($post, $type, $params=array())
 			
 		if($poster['pronouns'])
 			$pronouns = '<span class="lower"> - '.$poster['pronouns'].'</span>';
+	}
+	
+	if(!$deaduser)
+	{
+		$mobilehead = $pronouns.' - '.$poster['posts'].' posts';
+	}
+	else
+	{
+		$mobilehead = '';
 	}
 	
 	// ====================
@@ -298,8 +303,8 @@ function makePost($post, $type, $params=array())
 				<table class="outline margin" id="post'.$post['id'].'">
 					<tr>
 						<td class="cell2 mobile-postheader deleted" id="dyna_'.$post['id'].'">
-							'.$links->build(2).'
-							<div class="smallFonts">'.userLink($poster).$pronouns.' - '.$poster['posts'].' posts<br>'.$meta.'</div>
+							'.$links.'
+							<div class="smallFonts">'.userLink($poster).$mobilehead.'<br>'.$meta.'</div>
 						</td>
 					</tr>
 				</table>';
@@ -315,7 +320,7 @@ function makePost($post, $type, $params=array())
 							<div style=\"float:left\">
 								$meta
 							</div>
-							".$links->build()."
+							".$links."
 						</td>
 					</tr>
 				</table>";
@@ -375,52 +380,63 @@ function makePost($post, $type, $params=array())
 
 	if(!$mobileLayout)
 	{
-		if($poster['rankset'] && $poster['rankset'] != 'levels')
-			$sideBarStuff .= GetRank($poster["rankset"], $poster["posts"])."<br>";
-
-		// disabled because changing the title reverts profile to the last revision for some reason????
-		/*if($poster['title'])
-			$sideBarStuff .= strip_tags(CleanUpPost($poster['title'], "", true), "<b><strong><i><em><span><s><del><img><a><br/><br><small>")."<br>";*/
-
-		if($pictureUrl)
-			$sideBarStuff .= "<a href=\"/?page=profile&id=".$poster['id']."\"><img style=\"max-width:150px;\" src=\"".htmlspecialchars($pictureUrl)."\" alt=\"\" /></a><br>";
-		
-		$sideBarStuff .= GetRank('levels', $poster["posts"])."<br>";
-
-		$sideBarStuff .= GetSyndrome(getActivity($poster["id"]));
-
-		$lastpost = ($poster['lastposttime'] ? timeunits(time() - $poster['lastposttime']) : "none");
-		$lastview = timeunits(time() - $poster['lastactivity']);
-	
-		if($poster['pronouns'])
-			$sideBarStuff .='<br>Pronouns: <span class="lower">'.$poster['pronouns'].'</span>';
-	
-		$sideBarStuff .= "<br>Posts: ".$metaposts;
-	
-		$sideBarStuff .= "<br>Joined: ".cdate($loguser['dateformat'], $poster['regdate'])."<br />";
-
-		$sideBarStuff .= "<br>Last post: ".$lastpost;
-		$sideBarStuff .= "<br>Last view: ".$lastview;
-		
-		if(!$isBlocked)
+		if($deaduser)
 		{
-			$pTable = "table".$poster['id'];
-			$row1 = "row".$poster['id']."_1";
-			$row2 = "row".$poster['id']."_2";
-			$topBar1 = "topbar".$poster['id']."_1";
-			$topBar2 = "topbar".$poster['id']."_2";
-			$sideBar = "sidebar".$poster['id'];
-			$mainBar = "mainbar".$poster['id'];
+			$pTable = "table0 safe";
+			$row1 = "row0_1 safe";
+			$row2 = "row0_2 safe";
+			$topBar1 = "topbar0_1 safe";
+			$topBar2 = "topbar0_2 safe";
+			$sideBar = "sidebar0 safe";
+			$mainBar = "mainbar0 safe";
 			
-			if($poster['postheader'])
+			$sideBarStuff = 'This user does not exist.';
+		}
+		else
+		{
+			if($poster['rankset'] && $poster['rankset'] != 'levels')
+				$sideBarStuff .= GetRank($poster["rankset"], $poster["posts"])."<br>";
+
+			if($pictureUrl)
+				$sideBarStuff .= "<a href=\"/?page=profile&id=".$poster['id']."\"><img style=\"max-width:150px;\" src=\"".htmlspecialchars($pictureUrl)."\" alt=\"\" /></a><br>";
+			
+			$sideBarStuff .= GetRank('levels', $poster["posts"])."<br>";
+
+			$sideBarStuff .= GetSyndrome(getActivity($poster["id"]));
+
+			$lastpost = ($poster['lastposttime'] ? timeunits(time() - $poster['lastposttime']) : "none");
+			$lastview = timeunits(time() - $poster['lastactivity']);
+		
+			if($poster['pronouns'])
+				$sideBarStuff .='<br>Pronouns: <span class="lower">'.$poster['pronouns'].'</span>';
+		
+			$sideBarStuff .= "<br>Posts: ".$metaposts;
+		
+			$sideBarStuff .= "<br>Joined: ".cdate($loguser['dateformat'], $poster['regdate'])."<br />";
+
+			$sideBarStuff .= "<br>Last post: ".$lastpost;
+			$sideBarStuff .= "<br>Last view: ".$lastview;
+			
+			if(!$isBlocked)
 			{
-				$pTable .= " safe";
-				$row1 .= " safe";
-				$row2 .= " safe";
-				$topBar1 .= " safe";
-				$topBar2 .= " safe";
-				$sideBar .= " safe";
-				$mainBar .= " safe";
+				$pTable = "table".$poster['id'];
+				$row1 = "row".$poster['id']."_1";
+				$row2 = "row".$poster['id']."_2";
+				$topBar1 = "topbar".$poster['id']."_1";
+				$topBar2 = "topbar".$poster['id']."_2";
+				$sideBar = "sidebar".$poster['id'];
+				$mainBar = "mainbar".$poster['id'];
+				
+				if($poster['postheader'])
+				{
+					$pTable .= " safe";
+					$row1 .= " safe";
+					$row2 .= " safe";
+					$topBar1 .= " safe";
+					$topBar2 .= " safe";
+					$sideBar .= " safe";
+					$mainBar .= " safe";
+				}
 			}
 		}
 	}
@@ -435,13 +451,12 @@ function makePost($post, $type, $params=array())
 	// PRINT THE POST!
 
 	if($mobileLayout)
-	{
 		echo '
 				<table class="outline margin" id="post'.$post['id'].'">
 					<tr>
 						<td class="cell2 mobile-postheader" id="dyna_'.$post['id'].'">
-							'.$links->build(2).'
-							'.$picture.'<div class="smallFonts">'.userLink($poster).$pronouns.' - '.$poster['posts'].' posts<br>'.$meta.'</div>
+							'.$links.'
+							'.$picture.'<div class="smallFonts">'.userLink($poster).$mobilehead.'<br>'.$meta.'</div>
 						</td>
 					</tr>
 					<tr>
@@ -450,7 +465,6 @@ function makePost($post, $type, $params=array())
 						</td>
 					</tr>
 				</table>';
-	}
 	else
 		echo "
 			<table class=\"post margin $pTable\" id=\"post${post['id']}\">
@@ -466,7 +480,7 @@ function makePost($post, $type, $params=array())
 						<div style=\"float: left; text-align:left; display: none;\" id=\"dyna_${post['id']}\">
 							Hi.
 						</div>
-						" . $links->build() . "
+						".$links."
 					</td>
 				</tr>
 				<tr class=\"".$row2."\">

@@ -1,13 +1,10 @@
 <?php
-//  AcmlmBoard XD - The Records
-//  Access: all
 
-
-$title = __("Records");
 AssertForbidden("viewRecords");
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry(__("Records"), "records"));
-makeBreadcrumbs($crumbs);
+
+$title = 'Records';
+$crumbo = array($title => '');
+$layout_crumbs = MakeCrumbs($crumbo);
 
 $df = "l, F jS Y, G:i:s";
 

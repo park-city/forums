@@ -1,6 +1,11 @@
 <?php
 
+if(!$config['enableUploader'])
+	die(header("Location: ".actionLink("404")));
+
 $title = 'Uploader';
+$crumbo = array($title => actionLink('upload'));
+$layout_crumbs = MakeCrumbs($crumbo);
 
 AssertForbidden("viewUploader");
 

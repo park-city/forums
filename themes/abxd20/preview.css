@@ -1,0 +1,17 @@
+.safe.abxd20 {
+	background: #000 url(/img/abxd20.png) repeat-x; color: #fff;
+	box-shadow: 0px 0px 4px rgb(192, 192, 255);
+	border-radius: 8px;
+}
+.safe.abxd20 td, .safe.abxd20 th { border: 1px solid rgba(0, 0, 0, 0.5); }
+.safe.abxd20 td { background: rgba(160, 160, 255, 0.025); }
+.safe.abxd20 .cell2 { background: rgba(160, 160, 255, 0.075); }
+.safe.abxd20 th {
+	background: rgba(160, 160, 255, 0.200);
+	color: white;
+	text-shadow: 1px 1px 2px black;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+}
+.safe.abxd20 tr:last-child td:first-child { border-bottom-left-radius: 8px; }
+.safe.abxd20 tr:last-child td:last-child { border-bottom-right-radius: 8px; }

@@ -1,8 +1,7 @@
 <?php
 $title = 'Search';
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry('Search', "search"));
-makeBreadcrumbs($crumbs);
+$crumbo = array($title => actionLink('search'));
+$layout_crumbs = MakeCrumbs($crumbo);
 
 if(isset($_POST['google']))
 {

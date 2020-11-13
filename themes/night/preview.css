@@ -1,0 +1,27 @@
+.safe.night
+{
+	background: rgb(4,4,23) url(bg.png);
+	color: #fff;
+	border-collapse: separate;
+	border-spacing: 0;
+	font-weight: normal;
+}
+
+.safe.night th,.safe.night td
+{
+	border-top: 1px solid rgba(125, 123, 193, 0.15);
+	border-left: 1px solid rgba(125, 123, 193, 0.15);
+	border-right: 1px solid #000;
+	border-bottom: 1px solid #000;
+	background: hsla(240, 50%, 13%, 0.60);
+}
+
+.safe.night .cell2
+{
+	background: hsla(240, 50%, 13%, 0.80);
+}
+
+.safe.night th
+{
+	background: linear-gradient(to bottom, rgba(47,47,96,0.75) 0%,rgba(37,37,86,0.75) 100%);
+}

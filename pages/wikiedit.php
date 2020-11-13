@@ -1,5 +1,8 @@
 <?php
 
+if(!$config['enableWiki'])
+	die(header("Location: ".actionLink("404")));
+
 require './lib/wiki.php';
 
 if (isset($_GET['createnew']))
@@ -29,25 +32,17 @@ $urltitle = $ptitle;//urlencode($ptitle);
 $nicetitle = htmlspecialchars(url2title($ptitle));
 $title = 'Wiki &raquo; '.($page['new'] == 2 ? 'New page' : 'Editing: '.$nicetitle);
 
-$links = new PipeMenu();
+$linko = '';
 
 if ($page['new'] != 2)
 {
 	if ($page['istalk'])
-	{
-		$links -> add(new PipeMenuLinkEntry('Page', 'wiki', substr($urltitle,5)));
-		$links -> add(new PipeMenuTextEntry('Discuss'));
-	}
+		$linko .= actionLinkTagItem('Page', 'wiki', substr($urltitle,5));
 	else
-	{
-		$links -> add(new PipeMenuTextEntry('Page'));
-		$links -> add(new PipeMenuLinkEntry('Discuss', 'wiki', 'Talk:'.$urltitle));
-	}
+		$linko .= actionLinkTagItem('Discuss', 'wiki', 'Talk:'.$urltitle);
 
-	$links -> add(new PipeMenuLinkEntry('View', 'wiki', $urltitle));
+	$linko .= actionLinkTagItem('View', 'wiki', $urltitle);
 }
-
-makeLinks($links);
 
 if (isset($_POST['saveaction']))
 {
@@ -75,27 +70,20 @@ if (isset($_POST['saveaction']))
 	Query("INSERT INTO {wiki_pages} (id,revision,flags) VALUES ({0},{1},{2}) ON DUPLICATE KEY UPDATE revision={1}, flags={2}", 
 		$page['id'], $rev, $flags);
 		
-	$bucket = 'wikixd_pageedit'; include("lib/pluginloader.php");
-		
 	die(header('Location: '.actionLink('wiki', $page['id'])));
 }
 
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry(__("Wiki"), "wiki"));
+$crumbo = array('Wiki' => actionLink('wiki'));
+
 if (!$page['ismain'])
-	$crumbs->add(new PipeMenuLinkEntry($nicetitle, "wiki", $urltitle));
-
-
-if ($page['new'] == 2)
-	$crumbs->add(new PipeMenuLinkEntry("New page", 'wikiedit', '', 'createnew'));
-else if ($page['ismain'])
-	$crumbs->add(new PipeMenuLinkEntry('Edit main page', 'wikiedit', $urltitle));
-else
 {
-	$crumbs->add(new PipeMenuLinkEntry($nicetitle, 'wiki', $urltitle));
-	$crumbs->add(new PipeMenuLinkEntry('Edit', 'wikiedit', $urltitle));
+	$crumbo[$nicetitle] = actionLink('wiki', $urltitle);
+	$crumbo['Edit'] = actionLink('wikiedit', $urltitle);
 }
-makeBreadcrumbs($crumbs);
+else
+	$crumbo['Edit main page'] = actionLink('wikiedit', $urltitle);
+
+$layout_crumbs = MakeCrumbs($crumbo, $linko);
 
 echo '
 		<table class="outline margin">

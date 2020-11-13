@@ -7,7 +7,7 @@ body,div.spoiler div.spoiled {
 
 table,td,tr,th,div { border-color:black; }
 
-a:link,a:visited,a:active { color: #ffc040; }
+a,a:visited,a:active { color: #ffc040; }
 a:hover,a span:hover { color: #fff; }
 
 .newMarker { color: #FFF700; text-shadow: 1px 1px 0px #8C6300; }
@@ -33,4 +33,15 @@ input,select,textarea,button { background: rgba(0,0,0,0.35); color: white; borde
 
 .mobile-postheader {
 	color: rgba(255,255,255,0.5);
+}
+
+/* deleted users */
+
+.nuked { color: #888888; font-weight: bold; }
+
+.table0
+{
+	background: #1a1a1a;
+	border: 1px solid #888;
+	color: #dedede;
 }

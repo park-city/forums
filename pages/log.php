@@ -1,10 +1,13 @@
 <?php
 
 if($loguser['powerlevel'] < 3)
-	Kill(__("Access denied."));
+	Kill('Access denied.');
 
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry(__("Log"), "log"));
-makeBreadcrumbs($crumbs);
+$title = 'Log';
+
+$crumbo = array();
+$crumbo['Admin'] = actionLink('admin');
+$crumbo[$title] = '';
+$layout_crumbs = MakeCrumbs($crumbo);
 
 doLogList("1");

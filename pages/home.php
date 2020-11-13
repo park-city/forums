@@ -4,68 +4,17 @@ $title = 'Home';
 $pl = $loguser['powerlevel'];
 if($pl < 0) $pl = 0;
 
-$rFora = Query("select * from {forums} where id = {0}", 7);
+$rFora = Query("select * from {forums} where id = {0}", $config['newsforum']);
 
 if(NumRows($rFora))
 	$forum = Fetch($rFora);
 else
-	Kill("It do not work");
+	Kill("News forum not found; check config");
 
 $fid = $forum['id'];
 
-$home = '
-			<table class="outline margin mw700">
-				<tr><th>Park City</th></tr>
-				<tr>
-					<td style="padding:16px;">
-						park city is an internet community for folks who pine for community in the isolated modern netscape. we\'re a group of friends, creative partners, and limitless imagination.
-					</td>
-				</tr>
-			</table>
-			<table class="outline margin mw700">
-				<tr>
-					<th>
-						Manifesto
-					</th>
-				</tr>
-				<tr>
-					<td colspan="2" style="font-family:\'overpass-mono\', monospace;font-weight:400;padding:16px;">
-						there is no obligation to look busy here
-						<br>no need to feed the feed
-						<br>or to drown in floods of content
-						<br><br>we\'re about making the most of what we have
-						<br>our servers, our people, our communities
-						<br>you are always enough
-						<br><br>we do not discriminate, we do not hate
-						<br>instead, we learn, grow, and forgive
-						<br>every interest, every expression of self
-						<br>we THRIVE on that
-						<br><br>welcome to the park. enjoy your stay. <3
-					</td>
-				</tr>
-			</table>';
-			
-$home2 = '
-			<table class="outline margin mw700">
-				<tr>
-					<td colspan="2" class="center all8831">
-						<a href="https://invisibleup.com"><img src="/img/btn/invis.gif"></a>
-						<a href="https://spriteclad.com"><img src="/img/btn/sc_button_dec2019.gif"></a>
-						<a href="https://mirrorprism.com"><img src="/img/btn/mp.gif"></a>
-						<a href="https://exo.pet"><img src="/img/btn/exopet.png"></a>
-						<a href="https://www.scoliwings.com"><img src="/img/btn/scoli.gif"></a>
-						<br>
-						<a href="https://pajamafrix.neocities.org"><img src="/img/btn/frix.gif"></a>
-						<a href="https://violetradd.neocities.org"><img src="/img/btn/violet.gif"></a>
-						<a href="https://hbaguette.neocities.org"><img src="/img/btn/baguette.gif"></a>
-						<a href="https://the-rose-garden.neocities.org"><img src="/img/btn/trg.png"></a>
-						<a href="https://roseknight.org"><img src="/img/btn/rk_button.gif"></a>
-					</td>
-				</tr>
-			</table>';
-
 if($mobileLayout)
-	print $home;
+	print $config['homecontent'];
 else
 	write('<table><tr><td style="background:transparent;width:50%;border:0px none;vertical-align:top;padding-right:1em; padding-bottom:1em;">');
 
@@ -155,7 +104,7 @@ if($pagelinks)
 
 if(!$mobileLayout)
 {
-	echo '</td><td style="background:transparent;border:0 none;vertical-align:top;padding-bottom:1em;"><h2 style="text-align:center;">About</h2>'.$home;
+	echo '</td><td style="background:transparent;border:0 none;vertical-align:top;padding-bottom:1em;"><h2 style="text-align:center;">About</h2>'.$config['homecontent'];
 	doLastPosts(true,15);
-	echo $home2.'</td></tr></table>';
+	echo $config['homefooter'].'</td></tr></table>';
 }

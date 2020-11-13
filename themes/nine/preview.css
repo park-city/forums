@@ -1,0 +1,11 @@
+.safe.nine
+{
+	background: #000 url(bg.gif);
+	border-collapse: collapse;
+	color: #fff;
+}
+
+.safe.nine td, .safe.nine th
+{
+	border: 1px solid #888;
+}

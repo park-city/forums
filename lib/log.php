@@ -31,7 +31,6 @@ $logText = array
 	// admin actions
 	'edituser' => '{user} edited {user2 s} profile',
 	'usercomment' => '{user} commented on {user2 s} profile',
-	'pmsnoop' => '{user} read {user2 s} PM: {pm}',
 	'editsettings' => '{user} edited the board\'s settings',
 	'editplugsettings' => '{user} edited the settings of plugin {text}',
 	'enableplugin' => '{user} enabled plugin {text}',
@@ -64,8 +63,6 @@ function logAction($type, $params)
 	Query("INSERT INTO {log} (date,type,ip,".implode(',',$fields).")
 		VALUES ({0},{1},{2},{3c})",
 		time(), $type, $_SERVER['REMOTE_ADDR'], $values);
-	
-	$bucket = 'logaction'; include('lib/pluginloader.php');
 }
 
 
@@ -81,12 +78,8 @@ function doLogList($cond)
 		'post' => array('table' => 'posts', 'key' => 'id', 'fields' => 'id'),
 		'forum' => array('table' => 'forums', 'key' => 'id', 'fields' => 'id,title'),
 		'forum2' => array('table' => 'forums', 'key' => 'id', 'fields' => 'id,title'),
-		'pm' => array('table' => 'pmsgs', 'key' => 'id', 'fields' => 'id'),
 	);
-
-	$bucket = 'log_fields'; include('lib/pluginloader.php');
-
-
+	
 	$joinfields = '';
 	$joinstatements = '';
 	foreach ($log_fields as $field=>$data)
@@ -223,9 +216,3 @@ function logFormat_forum2($data)
 {
 	return actionLinkTag($data['forum2_title'], 'forum', $data['forum2_id'], "", $data['forum2_title']);
 }
-
-function logFormat_pm($data)
-{
-	return actionLinkTag('PM #'.$data['pm_id'], 'showprivate', $data['pm_id'], 'snoop=1');
-}
-

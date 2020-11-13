@@ -1,4 +1,34 @@
 <?php
+if(!defined('DINNER')) die();
+
+function RenderTemplate($template, $options=null)
+{
+	global $tpl, $mobileLayout, $plugintemplates, $plugins;
+	
+	if (array_key_exists($template, $plugintemplates))
+	{
+		$plugin = $plugintemplates[$template];
+		$self = $plugins[$plugin];
+		
+		$tplroot = __DIR__.'/../plugins/'.$self['dir'].'/templates/';
+	}
+	else
+		$tplroot = __DIR__.'/../templates/';
+	
+	if ($mobileLayout)
+	{
+		$tplname = $tplroot.'mobile/'.$template.'.tpl';
+		if (!file_exists($tplname)) 
+			$tplname = $tplroot.$template.'.tpl';
+	}
+	else
+		$tplname = $tplroot.$template.'.tpl';
+	
+	if ($options)
+		$tpl->assign($options);
+	
+	$tpl->display($tplname);
+}
 
 function makeForumListing($parent, $page=0)
 {
@@ -217,24 +247,55 @@ function makeLinks($links)
 	return $links;
 }
 
-function makeForumCrumbs($crumbs, $forum)
+function makeCrumbs($path='', $links='')
 {
-	while(true)
+	global $mobileLayout, $layout_crumbs, $layout_actionlinks;
+	
+	if($path && count($path) != 0)
 	{
-		$crumbs->addStart(new PipeMenuLinkEntry($forum['title'], "forum", $forum["id"]));
-		if($forum["catid"] >= 0) break;
-		$forum = Fetch(Query("SELECT * from {forums} WHERE id={0}", -$forum["catid"]));
-	}
-}
+		$pathPrefix = array(BOARD_NAME => actionLink(MAIN_PAGE));
+		$path = $pathPrefix + $path;
+		
+		$first = true;
+	
+		foreach($path as $text=>$link)
+		{
+			if(is_array($link))
+			{
+				$dalink = $text;
+				$tags = $link[1];
+				$text = $link[0];
+				$link = $dalink;
+			}
+			else
+				$tags = "";
 
-function makeBreadcrumbs($crumbs)
-{
-	global $mainPage;
-	
-	$crumbs->addStart(new PipeMenuLinkEntry("Park City", $mainPage));
-	$crumbs->setClass("breadcrumbs");
-	
-	return $crumbs;
+			$link = str_replace("&","&amp;",$link);
+			
+			if(!$first)
+				$layout_crumbs .= " &raquo; ";
+			$first = false;
+			
+			if(!$tags)
+				$layout_crumbs .= "<a href=\"".$link."\">".$text."</a>";
+			elseif(TAGS_DIRECTION === 'Left')
+				$layout_crumbs .= $tags." <a href=\"".$link."\">".$text."</a>";
+			else
+				$layout_crumbs .= "<a href=\"".$link."\">".$text."</a> ".$tags;
+		}
+	}
+
+	if($links)
+	{
+		$type = 'pipemenu';
+		
+		foreach($links as $link)
+		{
+			$layout_actionlinks .= '<li>'.$link.'</li>';
+		}
+
+		$layout_actionlinks = '<div style="float:right;"><ul class="'.$type.'">'.$layout_actionlinks.'</ul></div>';
+	}
 }
 
 function mfl_forumBlock($fora, $catid, $selID, $indent)

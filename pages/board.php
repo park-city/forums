@@ -1,6 +1,5 @@
 <?php
-
-$title = 'Forums';
+if(!defined('DINNER')) die();
 
 if($loguserid && isset($_GET['action']) && $_GET['action'] == "markallread")
 {
@@ -8,16 +7,17 @@ if($loguserid && isset($_GET['action']) && $_GET['action'] == "markallread")
 	redirectAction("board");
 }
 
-$links = new PipeMenu();
+$links = array();
 if ($loguserid)
-	$links->add(new PipeMenuLinkEntry("Mark all forums read", "board", 0, "action=markallread", "ok"));
+	$links[] = actionLinkTag("Mark all forums read", "board", 0, "action=markallread", '', 'ok');
 
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry("Forums", "board"));
-makeBreadcrumbs($crumbs);
+if(MAIN_PAGE != 'board')
+{
+	$title = 'Forums';
+	$crumbs = array($title => actionLink("board"));
+}
 
-makeLinks($links);
-makeBreadcrumbs(new PipeMenu());
+makeCrumbs($crumbs, $links);
 
 printRefreshCode();
 makeForumListing(0);

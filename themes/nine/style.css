@@ -1,0 +1,17 @@
+/* Originally a phpBB theme, actually */
+
+@import url('/css/common-dark.css');
+
+body
+{
+	background: #000 url(bg.gif);
+	font-family: 'Times New Roman', serif;
+	font-size: 90%;
+}
+
+a:link,a:visited,a:active { color: #00ffff; }
+a:hover { color: #428bca; }
+
+table:not(.safe),td:not(.safe):not(.post):not(.userlink):not(.side):not(.meta),th:not(.safe) { border: 1px solid #888; border-collapse: collapse; }
+
+td:not(.safe),th:not(.safe) { padding: 4px 8px 4px 8px; }

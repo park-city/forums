@@ -1,11 +1,9 @@
 <?php
 
-$title = "Edit thread";
-
 AssertForbidden("editThread");
 
 if (isset($_REQUEST['action']) && $loguser['token'] != $_REQUEST['key'])
-		Kill(__("No."));
+		Kill('Access denied.');
 
 if(!$loguserid) //Not logged in?
 	Kill("You must be logged in to edit threads.");
@@ -47,11 +45,15 @@ if($forum['minpower'] > $loguser['powerlevel'])
 $tags = ParseThreadTags($thread['title']);
 setUrlName("thread", $thread["id"], $thread["title"]);
 
-$crumbs = new PipeMenu();
-makeForumCrumbs($crumbs, $forum);
-$crumbs->add(new PipeMenuHtmlEntry(makeThreadLink($thread)));
-$crumbs->add(new PipeMenuTextEntry(__("Edit thread")));
-makeBreadcrumbs($crumbs);
+$title = "Edit thread";
+
+$crumbo = array();
+if($config['mainpage'] != 'board') $crumbo['Forums'] = actionLink('board');
+$crumbo[$forum['title']] = actionLink('forum', $fid);
+$crumbo[$thread['title']] = actionLink('thread', $tid);
+$crumbo[$title] = actionLink('editthread', $tid);
+
+$layout_crumbs = MakeCrumbs($crumbo);
 
 if(isset($_POST["action"]))
 	$_GET["action"] = $_POST["action"];
@@ -91,9 +93,9 @@ if($canMod)
 	if($_GET['action'] == "edit" || $_GET['action'] == "delete" || $_GET['action'] == "trash")
 	{
 		if($_GET["action"] == "trash")
-			$_POST["moveTo"] = 5;
+			$_POST["moveTo"] = $config['trashforum'];
 		if($_GET["action"] == "delete")
-			$_POST["moveTo"] = 5;
+			$_POST["moveTo"] = $config['trashforum'];
 
 		if($thread["forum"] != $_POST["moveTo"])
 		{
@@ -102,9 +104,9 @@ if($canMod)
 			if(!$dest)
 			{
 				if($_GET['action'] == "delete")
-					Kill(__("Couldn't find deleted thread forum. Please specify one in the board's settings."));
+					Kill(__("Couldn't find deleted thread forum. Please specify one in the config file."));
 				else if($_GET['action'] == "trash")
-					Kill(__("Couldn't find trash forum. Please specify one in the board's settings."));
+					Kill(__("Couldn't find trash forum. Please specify one in the config file."));
 				else
 					Kill(__("Unknown forum ID."));
 			}
@@ -232,11 +234,11 @@ if($canMod)
 				<td>
 					<label>
 						<input type=\"checkbox\" name=\"isClosed\" ".($thread['closed'] ? " checked=\"checked\"" : "")." />
-						Locked
+						Closed
 					</label>
 					<label>
 						<input type=\"checkbox\" name=\"isSticky\" ".($thread['sticky'] ? " checked=\"checked\"" : "")." />
-						Pinned
+						Sticky
 					</label>
 				</td>
 			</tr>

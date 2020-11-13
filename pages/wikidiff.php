@@ -1,7 +1,10 @@
 <?php
 
+if(!$config['enableWiki'])
+	die(header("Location: ".actionLink("404")));
+
 require './lib/wiki.php';
-require './lib/Diff.php';
+require './lib/diff.php';
 require './lib/Diff/Renderer/inline.php';
 
 ?>
@@ -20,28 +23,24 @@ $urltitle = $page['id'];//urlencode($page['id']);
 $nicetitle = htmlspecialchars(url2title($page['id']));
 $title = 'Wiki &raquo; Diff: '.$nicetitle;
 
-$links = new PipeMenu();
+$linko = '';
 
-//I think this is broken. 
-$links -> add(new PipeMenuLinkEntry('Page', 'wiki', substr($urltitle,5)));
-$links -> add(new PipeMenuLinkEntry('Discuss', 'wiki', 'Talk:'.$urltitle));
+if ($page['istalk'])
+	$linko .= actionLinkTagItem('Page', 'wiki', substr($urltitle,5));
+else
+	$linko .= actionLinkTagItem('Discuss', 'wiki', 'Talk:'.$urltitle);
 
 if ($page['canedit'])
-	$links -> add(new PipeMenuLinkEntry('Edit', 'wikiedit', $urltitle));
-	
-makeLinks($links);
+	$linko .= actionLinkTagItem('Edit', 'wikiedit', $urltitle);
 
+$crumbo = array('Wiki' => actionLink('wiki'));
 
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry(__("Wiki"), "wiki"));
-if ($page['ismain'])
-	$crumbs->add(new PipeMenuLinkEntry('Main page: Diff', 'wikidiff', $urltitle, 'rev='.$rev));
-else
-{
-	$crumbs->add(new PipeMenuLinkEntry($nicetitle, 'wiki', $urltitle));
-	$crumbs->add(new PipeMenuLinkEntry('Diff', 'wikidiff', $urltitle, 'rev='.$rev));
-}
-makeBreadcrumbs($crumbs);
+if (!$page['ismain'])
+	$crumbo[$nicetitle] = actionLink('wiki', $urltitle);
+
+$crumbo['Diff'] = actionLink('wikidiff', $urltitle, 'rev='.$rev);
+
+$layout_crumbs = MakeCrumbs($crumbo, $linko);
 	
 if ($page['new']) Kill('This page has not been created yet.');
 if ($page['revision'] <= 1) Kill('This page has not been edited since its creation.');

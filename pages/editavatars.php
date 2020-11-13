@@ -1,15 +1,11 @@
 <?php
+if(!defined('DINNER')) die();
 
-$title = "Mood avatars";
+CheckPermission('user.editprofile');
+CheckPermission('user.editavatars');
 
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry(__("Mood avatars"), "editavatars"));
-makeBreadcrumbs($crumbs);
-
-AssertForbidden("editMoods");
-
-if(!$loguserid)
-	Kill(__("You must be logged in to edit your avatars."));
+$title = __("Mood avatars");
+makeCrumbs(array($title => actionLink('editavatars')));
 
 if(isset($_POST['action']))
 {
@@ -17,17 +13,17 @@ if(isset($_POST['action']))
 	if($_POST['action'] == __("Rename"))
 	{
 		Query("update {moodavatars} set name={0} where mid={1} and uid={2}", $_POST['name'], $mid, $loguserid);
-		Alert(__("Avatar renamed."), __("Okay"));
+		Alert("Avatar renamed.", "Okay");
 	}
-	else if($_POST['action'] == __("Delete"))
+	else if($_POST['action'] == "Delete")
 	{
 		Query("delete from {moodavatars} where uid={0} and mid={1}", $loguserid, $mid);
 		Query("update {posts} set mood=0 where user={0} and mood={1}", $loguserid, $mid);
 		if(file_exists("{$dataDir}avatars/".$loguserid."_".$mid))
 			unlink("{$dataDir}avatars/".$loguserid."_".$mid);
-		Alert(__("Avatar deleted."), __("Okay"));
+		Alert("Avatar deleted.", "Okay");
 	}
-	else if($_POST['action'] == __("Add"))
+	else if($_POST['action'] == "Add")
 	{
 		$highest = FetchResult("select mid from {moodavatars} where uid={0} order by mid desc limit 1", $loguserid);
 		if($highest < 1)
@@ -128,7 +124,7 @@ while($mood = Fetch($rMoods))
 
 write(
 "
-	<table class=\"margin outline width50\">
+	<table class=\"margin outline mcenter mw700\">
 		<tr class=\"header1\">
 			<th colspan=\"2\">
 				".__("Mood avatars")."

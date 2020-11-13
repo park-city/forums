@@ -1,4 +1,8 @@
 <?php
+if(!defined('DINNER')) die();
+
+$ishttps = ($_SERVER['SERVER_PORT'] == 443);
+$serverport = ($_SERVER['SERVER_PORT'] == ($ishttps?443:80)) ? '' : ':'.$_SERVER['SERVER_PORT'];
 
 function getRefreshActionLink()
 {
@@ -33,45 +37,33 @@ function setUrlName($action, $id, $urlname)
 	$urlNameCache[$action."_".$id] = $urlname;
 }
 
-if($urlRewriting)
-	include("urlrewriting.php");
-else
+function actionLink($action, $id="", $args="", $urlname="")
 {
+	$boardroot = URL_ROOT;
+	if($boardroot == "")
+		$boardroot = "./";
 
-	function actionLink($action, $id="", $args="", $urlname="")
-	{
-		global $boardroot, $mainPage;
-		if($boardroot == "")
-			$boardroot = "./";
+	$res = "";
 
-		$res = "";
+	if($action != MAIN_PAGE)
+		$res .= "&page=$action";
 
-		if($action != $mainPage)
-			$res .= "&page=$action";
+	if($id != "")
+		$res .= "&id=".urlencode($id);
+	if($args)
+		$res .= "&$args";
 
-		if($id != "")
-			$res .= "&id=".urlencode($id);
-		if($args)
-			$res .= "&$args";
-
-		if(strpos($res, "&amp"))
-		{
-			debug_print_backtrace();
-			Kill("Found &amp;amp; in link");
-		}
-
-		if($res == "")
-			return $boardroot;
-		else
-			return $boardroot."?".substr($res, 1);
-	}
+	if($res == "")
+		return $boardroot;
+	else
+		return $boardroot."?".substr($res, 1);
 }
 
-function actionLinkTag($text, $action, $id=0, $args="", $urlname="")
+function actionLinkTag($text, $action, $id=0, $args="", $urlname="", $icon="")
 {
 	return '<a href="'.htmlentities(actionLink($action, $id, $args, $urlname)).'">'.$text.'</a>';
 }
-function actionLinkTagItem($text, $action, $id=0, $args="", $urlname="")
+function actionLinkTagItem($text, $action, $id=0, $args="", $urlname="", $icon="")
 {
 	return '<li><a href="'.htmlentities(actionLink($action, $id, $args, $urlname)).'">'.$text.'</a></li>';
 }
@@ -98,52 +90,64 @@ function redirect($url)
 
 function resourceLink($what)
 {
-	global $boardroot;
-	return "$boardroot$what";
+	return URL_ROOT.$what;
 }
 
 function themeResourceLink($what)
 {
-	global $theme, $boardroot;
-	return $boardroot."themes/$theme/$what";
+	global $theme;
+	return URL_ROOT."themes/$theme/$what";
 }
 
 function getMinipicTag($user)
 {
-	global $dataUrl;
-	$minipic = "";
-	if($user["minipic"] == "#INTERNAL#")
-		$minipic = "<img src=\"${dataUrl}minipics/${user["id"]}\" alt=\"\" class=\"minipic\" />&nbsp;";
-	else if($user["minipic"])
-		$minipic = "<img src=\"".$user['minipic']."\" alt=\"\" class=\"minipic\" />&nbsp;";
+	if (!$user['minipic']) return '';
+	$pic = str_replace('$root/', DATA_URL, $user['minipic']);
+	$minipic = "<img src=\"".htmlspecialchars($pic)."\" alt=\"\" class=\"minipic\" />&nbsp;";
 	return $minipic;
 }
+
 function userLink($user, $showMinipic = false, $customID = false)
 {
-	global $powerlevels;
-
+	if(!$user['name'])
+		return '<span class="userlink nuked">Deleted User</span>';
+	
+	$class = 'userlink';
+	$style = '';
+	
+	$fgroup = $usergroups[$user['primarygroup']];
 	$fname = ($user['displayname'] ? $user['displayname'] : $user['name']);
 	$fname = htmlspecialchars($fname);
 	$fname = str_replace(" ", "&nbsp;", $fname);
-
-	$classing = 'class="userlink';
 	
-	if($user["hascolor"])
+	$isbanned = $fgroup['id'] == BANNED_GROUP;
+	
+	if($isbanned)
+		$class .= ' nuked';
+	else
 	{
-		$color = htmlspecialchars($user["color"]);
-		if ($color[0] !== "#")
-			$color = '#'.$color;
+		$minipic = "";
+		if($showMinipic || ALWAYS_MINIPIC)
+			$minipic = getMinipicTag($user);
 		
-		$classing .= '" style="color:'.$color.';"';
-	} else
-		$classing .= ' defacto"';
-
+		$fname = $minipic.$fname;
+		
+		if($user["hascolor"])
+		{
+			$color = htmlspecialchars($user["color"]);
+			if ($color[0] !== "#")
+				$color = '#'.$color;
+			
+			$style = 'style="color:'.$color.';"';
+		} else
+			$class .= ' defacto';
+	}
+	
 	$title = $user["id"].": ".htmlspecialchars($user['name']);
 	if ($user['pronouns'])
 		$title .= " (".$user['pronouns'].")";
 	
-	$userlink = actionLinkTag("<span $classing title=\"$title\">$fname</span>", "profile", $user["id"], "", $user["name"]);
-	return $userlink;
+	return actionLinkTag('<span class="'.$class.'" '.$style.' title="'.$title.'">'.$minipic.$fname.'</span>', 'profile', $user['id'], '', $user['name']);
 }
 
 function userLinkById($id)
@@ -156,7 +160,7 @@ function userLinkById($id)
 		if(NumRows($rUser))
 			$userlinkCache[$id] = getDataPrefix(Fetch($rUser), "u_");
 		else
-			$userlinkCache[$id] = array('id' => 0, 'name' => "Unknown User", 'sex' => 0, 'powerlevel' => -1);
+			$userlinkCache[$id] = array('id' => 0, 'name' => "Unknown User", 'sex' => 0, 'primarygroup' => -1);
 	}
 	return UserLink($userlinkCache[$id]);
 }
@@ -164,23 +168,22 @@ function userLinkById($id)
 function makeThreadLink($thread)
 {
 	$tags = ParseThreadTags($thread["title"]);
-	setUrlName("thread", $thread["id"], $tags[0]);
-	$link = actionLinkTag($tags[0], "thread", $thread["id"], "", $tags[0]);
+	/*setUrlName("thread", $thread["id"], $tags[0]);
+	$link = actionLinkTag($tags[0], "thread", $thread["id"], "", $tags[0]);*/
+	$link = actionLinkTag($tags[0], 'thread', $thread['id'], '', HasPermission('forum.viewforum',$thread['forum'],true)?$tags[0]:'');
 	$tags = $tags[1];
 
-	return $link.' '.$tags.' ';
-
+	if (TAGS_DIRECTION == 'Left')
+		return $tags." ".$link;
+	else
+		return $link." ".$tags;
 }
+
 function makeFromUrl($url, $from)
 {
 	if($from == 0)
 	{
-		//This is full of hax.
-		$url = str_replace("&amp;from=", "", $url);
-		$url = str_replace("&from=", "", $url);
-		$url = str_replace("?from=", "", $url);
-		if(endsWith($url, "?"))
-			$url = substr($url, 0, strlen($url)-1);
+		$url = preg_replace('@(?:&amp;|&|\?)\w+=$@', '', $url);
 		return $url;
 	}
 	else return $url.$from;
@@ -256,42 +259,37 @@ function pageLinksInverted($url, $epp, $from, $total)
 	return $last.$next.join($pageLinks, "").$prev.$first;
 }
 
-
 function absoluteActionLink($action, $id=0, $args="")
 {
-	$https = isHttps();
-	return ($https?"https":"http") . "://" . $_SERVER['SERVER_NAME'].actionLink($action, $id, $args);
+	global $serverport;
+    return ($https?"https":"http") . "://" . $_SERVER['SERVER_NAME'].$serverport.dirname($_SERVER['PHP_SELF']).substr(actionLink($action, $id, $args), 1);
 }
 
 function getRequestedURL()
 {
-	return $_SERVER['REQUEST_URI'];
+    return $_SERVER['REQUEST_URI'];
 }
 
-function getServerURL()
+function getServerDomainNoSlash($https = false)
 {
-	return getServerURLNoSlash()."/";
+	global $serverport;
+	return ($https?"https":"http") . "://" . $_SERVER['SERVER_NAME'].$serverport;
 }
 
-function getServerURLNoSlash()
+function getServerURL($https = false)
 {
-	global $boardroot;
-	$https = isHttps();
-	$stdport = $https?443:80;
-	$port = "";
-	if($stdport != $_SERVER["SERVER_PORT"] && $_SERVER["SERVER_PORT"])
-		$port = ":".$_SERVER["SERVER_PORT"];
-	return ($https?"https":"http") . "://" . $_SERVER['HTTP_HOST'] . $port . substr($boardroot, 0, strlen($boardroot)-1);
+    return getServerURLNoSlash($https)."/";
 }
 
-function getFullRequestedURL()
+function getServerURLNoSlash($https = false)
 {
-	$https = isHttps();
-	$stdport = $https?443:80;
-	$port = "";
-	if($stdport != $_SERVER["SERVER_PORT"] && $_SERVER["SERVER_PORT"])
-		$port = ":".$_SERVER["SERVER_PORT"];
-	return ($https?"https":"http") . "://" . $_SERVER['HTTP_HOST'] . $port . $_SERVER['REQUEST_URI'];
+    global $serverport;
+    return ($https?"https":"http") . "://" . $_SERVER['SERVER_NAME'].$serverport . substr(URL_ROOT, 0, strlen(URL_ROOT)-1);
+}
+
+function getFullRequestedURL($https = false)
+{
+    return getServerURL($https) . $_SERVER['REQUEST_URI'];
 }
 
 function isHttps()

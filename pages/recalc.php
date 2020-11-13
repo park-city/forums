@@ -2,12 +2,12 @@
 AssertForbidden("recalculate");
 
 if($loguser['powerlevel'] < 1)
-		Kill('then i freaked it');
+	Kill('Access denied.');
 
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry('Admin', "admin"));
-$crumbs->add(new PipeMenuLinkEntry('Recalculate statistics', "recalc"));
-makeBreadcrumbs($crumbs);
+$title = 'Recalculate statistics';
+
+$crumbo = array('Admin' => actionLink('admin'), $title => actionLink('recalc'));
+$layout_crumbs = MakeCrumbs($crumbo);
 
 function startFix()
 {

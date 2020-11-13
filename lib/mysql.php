@@ -1,31 +1,13 @@
 <?php
+if(!defined('DINNER')) die();
+
 $queries = 0;
-$dberror = "";
-function sqlConnect()
-{
-	global $dbserv, $dbuser, $dbpass, $dbname, $dblink, $dberror;
-	$dblink = new mysqli($dbserv, $dbuser, $dbpass);
-	if($dblink->connect_error)
-	{
-		$dberror = $dblink->connect_error;
-		return false;
-	}
-	if(!$dblink->select_db($dbname))
-	{
-		$dberror = "Database does not exist";
-		return false;
-	}
-	
-	if (!$dblink->set_charset("utf8mb4"))
-	{
-        $dberror = "Error setting utf8mb4 charset";
-		return false;
-	}
-	
-	unset($dbpass);
-	
-	return true;
-}
+$dberror = '';
+
+$dblink = new mysqli($dbserv, $dbuser, $dbpass, $dbname);
+unset($dbpass);
+
+$dblink->set_charset('utf8mb4');
 
 function SqlEscape($text)
 {
@@ -45,16 +27,6 @@ function Query_ExpandFieldLists($match)
 	return implode(',', $ret);
 }
 
-function Query_MangleTables($match)
-{
-	global $dbpref, $tableLists;
-	$tablename = $match[1];
-	if(isset($tableLists[$tablenams]))
-		return $tableLists[$tablename];
-	
-	return $dbpref.$tablename;
-}
-
 function Query_AddUserInput($match)
 {
 	global $args;
@@ -72,6 +44,7 @@ function Query_AddUserInput($match)
 			
 	if ($format == 'c')
 	{
+		if (empty($var)) return 'NULL';
 		$final = '';
 		foreach ($var as $v) $final .= '\''.SqlEscape($v).'\',';
 		return substr($final,0,-1);
@@ -79,12 +52,6 @@ function Query_AddUserInput($match)
 
 	if($format == "i") return (string)((int)$var);
 	if($format == "u") return (string)max((int)$var, 0);
-	if($format == "l") 
-	{
-		//This is used for storing integers using the full 32bit range.
-		//TODO: add code to emulate the 32bit overflow on 64bit.
-		return (string)((int)$var);
-	}
 	return '\''.SqlEscape($var).'\'';
 }
 
@@ -99,8 +66,7 @@ function Query_AddUserInput($match)
  * {table} syntax allows for flexible manipulation of table names (namely, adding a DB prefix)
  *
  */
- 
-function parseQuery()
+function query()
 {
 	global $dbpref, $args, $fieldLists;
 	$args = func_get_args();
@@ -114,24 +80,17 @@ function parseQuery()
 	$query = preg_replace_callback("@(\w+)\.\(([\w,\s]+)\)@s", 'Query_ExpandFieldLists', $query);
 
 	// add table prefixes
-	$query = preg_replace_callback("@\{([a-z]\w*)\}@si", "Query_MangleTables", $query);
+	$query = preg_replace("@\{([a-z]\w*)\}@si", $dbpref.'$1', $query);
 
 	// add the user input
 	$query = preg_replace_callback("@\{(\d+\w?)\}@s", 'Query_AddUserInput', $query);
 
-	return $query;
-}
-
-function query()
-{
-	$args = func_get_args();
-	if (is_array($args[0])) $args = $args[0];
-	return rawQuery(parseQuery($args));
+	return RawQuery($query);
 }
 
 function rawQuery($query)
 {
-	global $queries, $querytext, $loguser, $dblink, $debugMode, $logSqlErrors, $dbpref, $loguserid, $mysqlCellClass, $debugQueries;
+	global $queries, $querytext, $loguser, $dblink, $debugMode, $logSqlErrors, $dbpref, $loguserid, $mysqlCellClass;
 
 //	if($debugMode)
 //		$queryStart = usectime();
@@ -155,28 +114,26 @@ function rawQuery($query)
 			$logQuery = "INSERT INTO {$dbpref}queryerrors (`user`,`ip`,`time`,`query`,`get`,`post`,`cookie`, `error`) VALUES ($loguserid, '$ip', $time, '$thequery', '$get', '$post', '$cookie', '$theError')";
 			$res = @$dblink->query($logQuery);
 		}
-		//if($debugMode)
-		//{
+		if($debugMode)
+		{
 			$bt = "";
-			if(function_exists("backTrace")) {
+			if(function_exists("backTrace"))
 				$bt = backTrace();
-			}
-			echo (nl2br($bt).
-				"<br><br>".htmlspecialchars($theError).
-				"<br><br>Query was: <code>".htmlspecialchars($query)."</code>");
-/*				<br>This could have been caused by a database layout change in a recent git revision. Try running the installer again to fix it. <form action=\"install/doinstall.php\" method=\"POST\"><br>
+			die(nl2br($bt).
+				"<br /><br />".htmlspecialchars($theError).
+				"<br /><br />Query was: <code>".htmlspecialchars($query)."</code>");
+/*				<br />This could have been caused by a database layout change in a recent git revision. Try running the installer again to fix it. <form action=\"install/doinstall.php\" method=\"POST\"><br />
 			<input type=\"hidden\" name=\"action\" value=\"Install\" />
 			<input type=\"hidden\" name=\"existingSettings\" value=\"true\" />
 			<input type=\"submit\" value=\"Click here to re-run the installation script\" /></form>");*/
-		//}
-		//else
-		//	trigger_error("MySQL Error.", E_USER_ERROR);
+		}	
+		trigger_error("MySQL Error.", E_USER_ERROR);
 		die("MySQL Error.");
 	}
 
 	$queries++;
 
-	if($debugQueries)
+	if($debugMode)
 	{
 		$mysqlCellClass = ($mysqlCellClass+1)%2;
 		$querytext .= "<tr class=\"cell$mysqlCellClass\"><td><pre style=\"white-space:pre-wrap;\">".htmlspecialchars(preg_replace('/^\s*/m', "", $query))."</pre></td><td>";
@@ -241,17 +198,7 @@ function getDataPrefix($data, $pref)
 	return $res;
 }
 
-
-$fieldLists = array(
-	"userfields" => "id,name,displayname,powerlevel,color,hascolor,pronouns,minipic"
-);
-
-$tableLists = array(
-);
-
-function loadFieldLists()
-{
-	global $fieldLists, $tableLists;
-}
+$fieldLists = array("userfields" => "id,name,displayname,powerlevel,color,hascolor,pronouns,minipic");
+$tableLists = array();
 
 ?>

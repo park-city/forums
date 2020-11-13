@@ -27,10 +27,12 @@ if($forum['minpowerthread'] > $loguser['powerlevel'])
 
 $OnlineUsersFid = $fid;
 
-$crumbs = new PipeMenu();
-makeForumCrumbs($crumbs, $forum);
-$crumbs->add(new PipeMenuTextEntry($title));
-makeBreadcrumbs($crumbs);
+$crumbo = array();
+if($config['mainpage'] != 'board') $crumbo['Forums'] = actionLink('board');
+$crumbo[$forum['title']] = actionLink('forum', $fid);
+$crumbo[$title] = actionLink('newthread');
+
+$layout_crumbs = MakeCrumbs($crumbo, $linko);
 
 if(isset($_POST['actionpreview']))
 {

@@ -1,14 +1,14 @@
 <?php
 
-$title = "Ranks";
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry($title, "ranks"));
-makeBreadcrumbs($crumbs);
 AssertForbidden("viewRanks");
 
 loadRanksets();
 if(count($ranksetData) == 0)
 	Kill("No ranksets found :(");
+
+$title = "Ranks";
+$crumbo = array($title => actionLink("ranks"));
+$layout_crumbs = MakeCrumbs($crumbo);
 
 if(!isset($_GET["id"]))
 {
@@ -28,13 +28,12 @@ if(!isset($ranksetData[$rankset]))
 
 if(count($ranksetNames) > 1)
 {
-	$ranksets = new PipeMenu();
-	foreach($ranksetNames as $name => $title)
+	$ranksets = '';
+	foreach($ranksetNames as $name => $cockandballs)
 		if($name == $rankset)
-			$ranksets->add(new PipeMenuTextEntry($title));
+			$ranksets .= '<li>'.$cockandballs.'</li>';
 		else
-			$ranksets->add(new PipeMenuLinkEntry($title, "ranks", $name));
-
+			$ranksets .= actionLinkTagItem($cockandballs, 'ranks', $name);
 
 	echo "
 		<table class=\"outline margin mcenter mw600\">
@@ -45,12 +44,12 @@ if(count($ranksetNames) > 1)
 			</tr>
 			<tr class=\"cell0 center\">
 				<td>
-					".$ranksets->build()."
+					<ul class=\"pipemenu\">
+						".$ranksets."
+					</ul>
 				</td>
 		</table>";
 }
-
-echo '<table class="outline margin mcenter mw600 center"><tr class="header0"><th>rAnDoM DiScLaImEr!!!</th></tr><tr class="cell0"><td>Ranks are merely cosmetic. They don\'t actually mean anything.</td></tr></table>';
 
 $users = array();
 $rUsers = Query("select u.(_userfields), u.posts as u_posts from {users} u order by id asc");

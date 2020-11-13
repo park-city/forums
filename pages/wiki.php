@@ -1,5 +1,8 @@
 <?php
 
+if(!$config['enableWiki'])
+	die(header("Location: ".actionLink("404")));
+
 require './lib/wiki.php';
 
 $rev = isset($_GET['rev']) ? (int)$_GET['rev'] : 0;
@@ -10,30 +13,24 @@ $urltitle = $page['id'];//urlencode($page['id']);
 $nicetitle = htmlspecialchars(url2title($page['id']));
 $title = 'Wiki &raquo; '.$nicetitle;
 
-$links = new PipeMenu();
+$linko = '';
+
+$linko .= actionLinkTagItem('Recent changes', 'wikichanges');
 
 if ($page['istalk'])
-{
-	$links -> add(new PipeMenuLinkEntry('Page', 'wiki', substr($urltitle,5)));
-	$links -> add(new PipeMenuTextEntry('Discuss'));
-}
+	$linko .= actionLinkTagItem('Page', 'wiki', substr($urltitle,5));
 else
-{
-	$links -> add(new PipeMenuTextEntry('Page'));
-	$links -> add(new PipeMenuLinkEntry('Discuss', 'wiki', 'Talk:'.$urltitle));
-}
+	$linko .= actionLinkTagItem('Discuss', 'wiki', 'Talk:'.$urltitle);
 
 if ($page['canedit'])
-	$links -> add(new PipeMenuLinkEntry('Edit', 'wikiedit', $urltitle));
+	$linko .= actionLinkTagItem('Edit', 'wikiedit', $urltitle);
 
-makeLinks($links);
+$crumbo = array('Wiki' => actionLink('wiki'));
 
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry(__("Wiki"), "wiki"));
 if (!$page['ismain'])
-	$crumbs->add(new PipeMenuLinkEntry($nicetitle, "wiki", $urltitle));
-makeBreadcrumbs($crumbs);
+	$crumbo[$nicetitle] = actionLink('wiki', $urltitle);
 
+$layout_crumbs = MakeCrumbs($crumbo, $linko);
 
 echo '
 		<table class="outline margin">

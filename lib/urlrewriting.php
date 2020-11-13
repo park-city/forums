@@ -1,4 +1,5 @@
 <?php
+// url rewriting that's unused and unteseted lol
 
 function actionLink($action, $id="", $args="", $urlname="")
 {
@@ -83,23 +84,3 @@ if(strtoupper($_SERVER['REQUEST_METHOD']) != 'POST' && !$valid)
 
 if(isset($_GET["rewriteurlname"]) && $_GET["rewriteurlname"] != "")
 	setUrlName($_GET["page"], $_GET["id"], $_GET["rewriteurlname"]);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

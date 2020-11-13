@@ -1,8 +1,0 @@
-@font-face {
-	font-family: 'Times New Bastard';
-	src:url('/font/bastard/TimesNewBastard-RegularWeb.ttf');
-	font-feature-settings: "kern" on, "liga" on;
-	text-rendering: optimizeLegibility;
-}
-
-.bastard { font-family: 'Times New Bastard', Times New Roman, serif; font-size: 16px; }

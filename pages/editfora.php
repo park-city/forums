@@ -1,16 +1,17 @@
 <?php
+if(!defined('DINNER')) die();
 
-$title = __("Edit forums");
+CheckPermission('admin.editforums');
 
-if ($loguser['powerlevel'] < 3) Kill(__("no"));
+$title = 'Edit forums';
 
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry(__("Edit forum list"), "editfora"));
-makeBreadcrumbs($crumbs);
+$crumbs = array();
+$crumbs['Admin'] = actionLink('admin');
+$crumbs[$title] = actionLink('editfora');
+makeCrumbs($crumbs);
 
 /**
 	Okay. Much like the category editor, now the action is specified by $_POST["action"].
-
 	Possible actions are:
 	- updateforum: Updates the settings of a forum in the DB.
 	- addforum: Adds a new forum to the DB.
@@ -19,16 +20,22 @@ makeBreadcrumbs($crumbs);
 		- "trash": TRASHES all the threads (move to trash and close)
 		- "move": MOVES the threads to forum ID $_POST["threadsmove"]
 		- "leave": LEAVES all the threads untouched in the DB (like the old forum editor. Not recommended. Will cause "invisible posts" that will still count towards user's postcounts)
-
 	- forumtable: Returns the forum table for the left panel.
 	- editforum: Returns the HTML code for the forum settings in right panel.
 		- editforumnew: Returns the forum edit box to create a new forum. This way the huge HTML won't be duplicated in the code.
 		- editforum: Returns the forum edit box to edit a forum.
-
+		
+		
+	PERMISSION EDITING PRESETS
+	
+	* Full: full access
+	* Standard: view, post threads, reply to threads
+	* Reply-only: view, reply to threads (ie announcement forum)
+	* Read-only: view
+	* No access: (none)
+	* Custom
 **/
 
-
-//Make actions be requested by GET also. Makes AJAX stuff easier in some cases. And manual debugging too :)
 if(!isset($_POST["action"]))
 	$_POST["action"] = $_GET["action"];
 
@@ -495,14 +502,14 @@ function WriteForumEditContents($fid)
 			</td>
 			<td>
 
-				$minpower
-				".__("to view")."
-				<br />
-				$minpowerthread
-				".__("to post threads")."
-				<br />
-				$minpowerreply
-				".__("to reply")."
+						$minpower
+						".__("to view")."
+						<br />
+						$minpowerthread
+						".__("to post threads")."
+						<br />
+						$minpowerreply
+						".__("to reply")."
 			</td>
 		</tr>
 		<tr class=\"cell0\">

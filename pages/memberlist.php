@@ -182,9 +182,9 @@ if ($_GET['listing'])
 	die();
 }
 
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry("Members", "memberlist"));
-makeBreadcrumbs($crumbs);
+$crumbo = array();
+$crumbo['Members'] = actionLink('memberlist');
+$layout_crumbs = MakeCrumbs($crumbo, $linko);
 
 if (!$isBot)
 {

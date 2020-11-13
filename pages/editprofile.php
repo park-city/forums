@@ -26,14 +26,17 @@ if($editUserMode && $user['powerlevel'] == 4 && $loguser['powerlevel'] != 4 && $
 
 AssertForbidden($editUserMode ? "editUser" : "editProfile");
 
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry("Members", "memberlist"));
-$crumbs->add(new PipeMenuHtmlEntry(userLink($user)));
-$crumbs->add(new PipeMenuTextEntry("Edit profile"));
-makeBreadcrumbs($crumbs);
+if($editUserMode) $title = 'Edit user';
+else $title = 'Edit profile';
 
-echo "<script src=\"".resourceLink('js/zxcvbn.js')."\"></script>";
-echo "<script src=\"".resourceLink('js/register.js')."\"></script>";
+$uname = $user['name'];
+if($user['displayname']) $uname = $user['displayname'];
+
+$crumbo = array();
+$crumbo['Members'] = actionLink('memberlist');
+$crumbo[$uname] = actionLink("profile", $user['id']);
+$crumbo[$title] = '';
+$layout_crumbs = MakeCrumbs($crumbo);
 
 loadRanksets();
 $ranksets = $ranksetNames;
@@ -103,7 +106,7 @@ $general = array(
 			"css" => array(
 				"caption" => "Custom CSS",
 				"type" => "textarea",
-				"extra" => "Make your own theme!",
+				"extra" => "Make your own theme! Only you can see this. See <a href=\"http://oryza.xyz/?page=thread&id=159\">here</a> for examples.",
 			),
 			"dateformat" => array(
 				"caption" => "Date format",
@@ -206,7 +209,7 @@ $layout = array(
 		"items" => array(
 			"postheader" => array(
 				"caption" => "Post header",
-				"extra" => "Placed immediately before your post text. Putting anything in your post header will prevent themes from styling your posts.",
+				"extra" => "Put &#60;style> tags here to make a post layout!",
 				"type" => "textarea",
 				"rows" => 16,
 			),
@@ -657,40 +660,69 @@ function HandlePowerlevel($field, $item)
  * -----------
  */
 
+$dir = "themes/";
 $themeList = "";
+$themes = array();
 
-foreach (glob("themes/*.php") as $pingas)
+if (is_dir($dir))
 {
-	$themename = array();
-	$themedesc = array();
-	$themecode = array();
-	$themeprev = array();
+    if ($dh = opendir($dir))
+    {
+        while (($file = readdir($dh)) !== false)
+        {
+            if(filetype($dir . $file) != "dir") continue;
+            if($file == ".." || $file == ".") continue;
+            $infofile = $dir.$file."/themeinfo.txt";
 
-    include $pingas;
-    
-    $themeKey = basename($pingas, '.php');
+            if(file_exists($infofile))
+            {
+		        $themeinfo = file_get_contents($infofile);
+		        $themeinfo = explode("\n", $themeinfo, 2);
+
+		        $themes[$file]["name"] = trim($themeinfo[0]);
+		        $themes[$file]["desc"] = trim($themeinfo[1]);
+		    }
+		    else
+		    {
+		        $themes[$file]["name"] = $file;
+		        $themes[$file]["desc"] = "";
+		    }
+        }
+        closedir($dh);
+    }
+}
+
+asort($themes);
+
+foreach($themes as $themeKey => $themeData)
+{
+	$themename = $themeData["name"];
+	$themedesc = $themeData["desc"];
 
 	$qCount = "select count(*) from {users} where theme='".$themeKey."'";
 	$numUsers = FetchResult($qCount);
-	
-	$themeList .= '<style>'.$themeprev[$themeKey].'</style>';
-	
+
 	if($themeKey == $user['theme'])
-		$selected = " checked=\"checked\"";
+		$selected = ' checked="checked"';
 	else
-		$selected = "";
+		$selected = '';
 	
+	if(file_exists($dir.$themeKey.'/preview.css'))
+		$themeList .= '<link rel="stylesheet" href="themes/'.$themeKey.'/preview.css">';
+	elseif(file_exists($dir.$themeKey.'/preview.php'))
+		$themeList .= '<link rel="stylesheet" href="themes/'.$themeKey.'/preview.php">';
+
 	$themeList .= '
 		<div style="display:inline-block;" class="theme">
-			<input style="display: none;" type="radio" name="theme" value="'.$themeKey.'"'.$selected.' id="'.$themeKey.'" onchange="ChangeTheme(this.value);">
-			<label style="display: inline-block; clear: left; padding: 0.5em; width: 260px; vertical-align: top" onmousedown="void();" for="'.$themeKey.'">
+			<input style="display:none;" type="radio" name="theme" value="'.$themeKey.'"'.$selected.' id="'.$themeKey.'" onchange="ChangeTheme(this.value);">
+			<label style="display:inline-block;clear:left;padding:0.5em;width:260px;vertical-align:top" onmousedown="void();" for="'.$themeKey.'">
 				<table class="safe '.$themeKey.'">
 					<tr>
-						<th class="safe" colspan=2>'.$themename[$themeKey].'</th>
+						<th class="safe" colspan=2>'.$themename.'</th>
 					</tr>
 					<tr>
 						<td class="safe cell2">&nbsp;</td>
-						<td class="safe cell0">'.$themedesc[$themeKey].'</td>
+						<td class="safe cell0">'.$themedesc.'</td>
 					</tr>
 					<tr>
 						<td class="safe cell2">&nbsp;</td>

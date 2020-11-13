@@ -1,6 +1,4 @@
 <?php
-//  AcmlmBoard XD - Posts by user viewer
-//  Access: all
 
 AssertForbidden("listPosts");
 
@@ -14,8 +12,6 @@ if(NumRows($rUser))
 	$user = Fetch($rUser);
 else
 	Kill(__("Unknown user ID."));
-
-$title = __("Post list");
 
 $total = FetchResult("
 			SELECT
@@ -63,14 +59,16 @@ $uname = $user["name"];
 if($user["displayname"])
 	$uname = $user["displayname"];
 
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry(__("Member list"), "memberlist"));
-$crumbs->add(new PipeMenuHtmlEntry(userLink($user)));
-$crumbs->add(new PipeMenuTextEntry(__("Posts")));
-makeBreadcrumbs($crumbs);
+$title = $uname."'s posts";
+
+$crumbo = array();
+$crumbo['Members'] = actionLink('memberlist');
+$crumbo[$uname] = actionLink("profile", $user['id']);
+$crumbo['Posts'] = '';
+$layout_crumbs = MakeCrumbs($crumbo);
 
 if($total == 0)
-	Kill(__("This user hasn't made any posts yet."));
+	Kill("This user hasn't made any posts.");
 
 $pagelinks = PageLinks(actionLink("listposts", $id, "from="), $ppp, $from, $total);
 

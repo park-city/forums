@@ -1,21 +1,23 @@
 <?php
 
 if($loguser['powerlevel'] < 3)
-	Kill(__("You're not an administrator. There is nothing for you here."));
+	Kill('Access denied.');
+
+$title = 'IP query';
 
 $ip = $_GET["id"];
 if(!filter_var($ip, FILTER_VALIDATE_IP))
-	Kill("Invalid IP");
+	Kill('Invalid IP');
 
-$links = new PipeMenu();
-$links -> add(new PipeMenuAnyLinkEntry(__("WHOIS query"), "http://dnsquery.org/ipwhois/$ip"));
-$links -> add(new PipeMenuHtmlEntry("<a onclick=\"if(confirm('Are you sure you want to IP-ban $ip?')) {document.getElementById('banform').submit();} return false;\" href=\"#\">IP Ban</a>"));
-makeLinks($links);
+$linko = '<li><a href="http://dnsquery.org/ipwhois/'.$ip.'">WHOIS query</a></li>';
+$linko .= "<li><a onclick=\"if(confirm('Are you sure you want to IP-ban $ip?')) {document.getElementById('banform').submit();} return false;\" href=\"#\">IP Ban</a></li>";
 
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry(__("IP bans"), "ipbans"));
-$crumbs->add(new PipeMenuLinkEntry($ip, "ipquery", $id));
-makeBreadcrumbs($crumbs);
+$crumbo = array();
+$crumbo['Admin'] = actionLink('admin');
+$crumbo['IP query'] = actionLink('admin');
+$crumbo[$ip] = '';
+
+$layout_crumbs = MakeCrumbs($crumbo, $linko);
 
 $rUsers = Query("select * from {users} where lastip={0}", $ip);
 

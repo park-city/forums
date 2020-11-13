@@ -1,17 +1,14 @@
 <?php
-//  AcmlmBoard XD - Realtime visitor statistics page
-//  Access: all
-
-$title = __("Online users");
-
+// This has always been a public page, but something told me to make it staff-only.
 if($loguser['powerlevel'] < 1)
-		Kill(__("Staff only, please."));
-
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry(__("Online users"), "online"));
-makeBreadcrumbs($crumbs);
+	Kill('Access denied.');
 
 AssertForbidden("viewOnline");
+
+$title = 'Online users';
+
+$crumbo = array($title => actionLink('online'));
+$layout_crumbs = MakeCrumbs($crumbo);
 
 // This can (and will) be turned into a permission.
 $showIPs = $loguser['powerlevel'] > 0;
@@ -32,7 +29,7 @@ foreach($spans as $span)
 write(
 "
 	<div class=\"smallFonts margin\">
-		".__("Show visitors from this far back:")."
+		Show visitors from this far back:
 		<ul class=\"pipemenu\">
 			{0}
 		</ul>

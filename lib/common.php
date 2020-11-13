@@ -1,7 +1,18 @@
 <?php
+if(!defined('DINNER')) die();
+
+header('Cache-control: no-cache, private');
+header('X-Frame-Options: DENY');
+
 error_reporting(E_ALL ^ E_NOTICE | E_STRICT);
 
+define('BOARD_ROOT', dirname(__DIR__).'/');
+define('DATA_DIR', BOARD_ROOT.'data/');
+
 $boardroot = preg_replace('{/[^/]*$}', '/', $_SERVER['SCRIPT_NAME']);
+
+define('URL_ROOT', $boardroot);
+define('DATA_URL', URL_ROOT.'data/');
 
 if (get_magic_quotes_gpc())
 {
@@ -26,48 +37,50 @@ function usectime()
 	$t = gettimeofday();
 	return $t['sec'] + ($t['usec'] / 1000000);
 }
-$timeStart = usectime();
 
 if (!function_exists('password_hash'))
 	require_once('password.php');
 
-include("config.php");
-include("dirs.php");
-include("debug.php");
-include("mysql.php");
-if(!sqlConnect())
-	die("Can't connect to the database!");
-if(!fetch(query("SHOW TABLES LIKE '{misc}'")))
-	die("Can't show tables like misc!");
+$dataDir = "data/";
+$dataUrl = $boardroot."data/";
 
-include("mysqlfunctions.php");
-include("feedback.php");
-include("language.php");
-include("write.php");
-include("snippets.php");
-include("links.php");
+include(__DIR__."/config.php");
+include(__DIR__."/debug.php");
+include(__DIR__."/mysql.php");
+include(__DIR__."/mysqlfunctions.php");
+include(__DIR__."/feedback.php");
+include(__DIR__."/language.php");
+include(__DIR__."/write.php");
+include(__DIR__."/functions.php");
+include(__DIR__."/links.php");
 
 class KillException extends Exception { }
 date_default_timezone_set("GMT");
+$timeStart = usectime();
 
 $title = "";
 
-include("browsers.php");
-include("pluginsystem.php");
-loadFieldLists();
-include("loguser.php");
-include("permissions.php");
-include("ranksets.php");
-include("post.php");
-include("log.php");
-include("onlineusers.php");
-include("htmlfilter.php");
-include("smilies.php");
+$thisURL = $_SERVER['SCRIPT_NAME'];
+if($q = $_SERVER['QUERY_STRING'])
+	$thisURL .= "?$q";
+
+include(__DIR__."/browsers.php");
+include(__DIR__."/pluginsystem.php");
+include(__DIR__."/loguser.php");
+include(__DIR__."/permissions.php");
+include(__DIR__."/ranksets.php");
+include(__DIR__."/post.php");
+include(__DIR__."/log.php");
+include(__DIR__."/onlineusers.php");
+include(__DIR__."/htmlfilter.php");
+include(__DIR__."/smilies.php");
 
 $theme = $loguser['theme'];
 
-include('layout.php');
-include("pipemenubuilder.php");
-include("lists.php");
+include(__DIR__."/layout.php");
+include(__DIR__."/lists.php");
 
-$mainPage = $config['mainpage'];
+include(__DIR__."/smarty/Smarty.class.php");
+$tpl = new Smarty;
+$tpl->assign('config', array('date' => $loguser['dateformat'], 'time' => $loguser['timeformat']));
+$tpl->assign('loguserid', $loguserid);

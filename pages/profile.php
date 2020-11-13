@@ -1,5 +1,5 @@
 <?php
-AssertForbidden("viewProfile");
+if (!defined('DINNER')) die();
 
 if(isset($_POST['id']))
 	$_GET['id'] = $_POST['id'];
@@ -19,7 +19,6 @@ if($loguserid && ($_GET['token'] == $loguser['token'] || $_POST['token'] == $log
 {
 	if(isset($_GET['block']))
 	{
-		AssertForbidden("blockLayouts");
 		$block = (int)$_GET['block'];
 		$rBlock = Query("select * from {blockedlayouts} where user={0} and blockee={1}", $id, $loguserid);
 		$isBlocked = NumRows($rBlock);
@@ -31,7 +30,47 @@ if($loguserid && ($_GET['token'] == $loguser['token'] || $_POST['token'] == $log
 	}
 }
 
+$uname = $user['displayname'] ?: $user['name'];
+
+$ugroup = $usergroups[$user['primarygroup']];
+$usgroups = array();
+
+$title = htmlspecialchars($uname);
+
+$links = array();
+
+if (HasPermission('admin.banusers') && $loguserid != $id)
+{
+	if ($user['primarygroup'] != BANNED_GROUP)
+		$links[] = actionLinkTag('Ban user', 'banhammer', $id);
+	else
+		$links[] = actionLinkTag('Unban user', 'banhammer', $id, 'unban=1');
+}
+
+if(HasPermission('user.editprofile') && $loguserid == $id)
+	$links[] = actionLinkTag('Edit profile', 'editprofile', '', '', 'pencil');
+elseif(HasPermission('admin.editusers'))
+	$links[] = actionLinkTag('Edit user', 'editprofile', $id, '', 'pencil');
+
+if(IsAllowed("blockLayouts") && $loguserid)
+{
+	$rBlock = Query("select * from {blockedlayouts} where user={0} and blockee={1}", $id, $loguserid);
+	$isBlocked = NumRows($rBlock);
+	if($isBlocked)
+		$links[] = actionLinkTag('Unblock layout', 'profile', $id, "block=0&token={$loguser['token']}");
+	else if($id != $loguserid)
+		$links[] = actionLinkTag('Block layout', 'profile', $id, "block=1&token={$loguser['token']}");
+}
+
+$crumbs = array();
+$crumbs['Members'] = actionLink('memberlist');
+$crumbs[$uname] = actionLink("profile", $id);
+
+makeCrumbs($crumbs, $links);
+
 $daysKnown = (time()-$user['regdate'])/86400;
+if(!$daysKnown) $daysKnown = 1;
+
 $threads = FetchResult("select count(*) from {threads} where user={0}", $id);
 
 $numposts = "0 posts";
@@ -85,6 +124,14 @@ $foo = array();
 //if($toNextRank)
 //	$foo["Rank"] .= $toNextRank;
 //$foo["Penis length"] = GetRank('levels', $user["posts"]);
+
+$glist = htmlspecialchars($ugroup['name']);
+foreach ($usgroups as $sgroup)
+{
+	if ($sgroup['display'] > -1)
+		$glist .= ', '.htmlspecialchars($sgroup['name']);
+}
+$foo["Groups"] = $glist;
 $foo["Posts and threads"] = $numposts.' and '.$numthreads;
 $foo["Registered"] = format("{0} ({1} ago)", formatdate($user['regdate']), TimeUnits($daysKnown*86400));
 
@@ -104,11 +151,10 @@ if($lastPost) {
 
 $foo["Last online"] = format("{0} ({1} ago)", formatdate($user['lastactivity']), TimeUnits(time() - $user['lastactivity']));
 
-if($loguser['powerlevel'] > 3) {
+if(HasPermission('admin.viewips'))
+{
 	$foo["User agent"] = str_replace("-->", "", str_replace("<!--", " &mdash;", $user['lastknownbrowser']));
 	$foo["IP address"] = formatIP($user['lastip']);
-	if($user['email'])
-		$foo["Email"] = $user['email'];
 }
 
 if(count($foo))
@@ -133,29 +179,6 @@ for($i = 0; $i < 15; $i++)
 	}
 }
 
-$lynx = new PipeMenu();
-
-if(IsAllowed("editProfile") && $loguserid == $id)
-	$lynx -> add(new PipeMenuLinkEntry("Edit profile", "editprofile", "", "", "pencil"));
-else if(IsAllowed("editUser") && $loguser['powerlevel'] > 2)
-	$lynx -> add(new PipeMenuLinkEntry("Edit user", "editprofile", $id, "", "pencil"));
-
-if(IsAllowed("blockLayouts") && $loguserid)
-{
-	$rBlock = Query("select * from {blockedlayouts} where user={0} and blockee={1}", $id, $loguserid);
-	$isBlocked = NumRows($rBlock);
-	if($isBlocked)
-		$lynx -> add(new PipeMenuLinkEntry("Unblock layout", "profile", $id, "block=0&token={$loguser['token']}", "ban-circle"));
-	else if($id != $loguserid)
-		$lynx -> add(new PipeMenuLinkEntry("Block layout", "profile", $id, "block=1&token={$loguser['token']}", "ban-circle"));
-}
-
-$uname = $user["name"];
-if($user["displayname"])
-	$uname = $user["displayname"];
-
-$title = htmlspecialchars($uname);
-
 if($user['bio'])
 	$previewPost['text'] = $user['bio'];
 else
@@ -172,7 +195,7 @@ if($mobileLayout)
 else
 	$profileTitle = 'Profile';
 
-MakePost($previewPost, POST_SAMPLE, array('metatext'=>$profileTitle,'lynx'=>$lynx));
+MakePost($previewPost, POST_SAMPLE, array('metatext'=>$profileTitle));
 
 $cc = 0;
 foreach($profileParts as $partName => $fields) {

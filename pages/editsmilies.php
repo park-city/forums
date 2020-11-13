@@ -1,16 +1,15 @@
 <?php
-//  AcmlmBoard XD - Smiley editing tool
-//  Access: administrators only
-
 AssertForbidden("editSmilies");
 
 if($loguser['powerlevel'] < 3)
 	Kill("You must be an administrator to edit the smiley table.");
 
+$title = 'Edit smilies';
 
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry(__("Edit smilies"), "editsmilies"));
-makeBreadcrumbs($crumbs);
+$crumbo = array();
+$crumbo['Admin'] = actionLink('admin');
+$crumbo[$title] = '';
+$layout_crumbs = MakeCrumbs($crumbo);
 
 if (isset($_POST['action']) && $loguser['token'] != $_POST['key'])
 	Kill(__("No."));
@@ -76,7 +75,8 @@ write(
 "
 	<div class=\"outline margin width25 faq\">
 		To add, fill in both bottom fields and apply.<br />
-		To edit, change either code or image fields to <em>not</em> match their hidden counterparts.
+		To edit, change either code or image fields to <em>not</em> match their hidden counterparts.<br>
+		This page sucks
 	</div>
 
 	<form method=\"post\" action=\"".actionLink("editsmilies")."\">

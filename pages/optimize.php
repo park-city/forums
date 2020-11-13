@@ -3,11 +3,11 @@
 AssertForbidden("optimize");
 
 if($loguser['powerlevel'] < 3)
-	Kill(__("You're not an administrator. There is nothing for you here."));
+	Kill('Access denied.');
 
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry(__("Optimize tables"), "optimize"));
-makeBreadcrumbs($crumbs);
+$title = 'Optimize tables';
+$crumbo = array('Admin' => actionLink('admin'), $title => actionLink('optimize'));
+$layout_crumbs = MakeCrumbs($crumbo);
 
 $rStats = Query("show table status");
 while($stat = Fetch($rStats))
@@ -24,7 +24,7 @@ foreach($tables as $table)
 	if($overhead > 0)
 	{
 		Query("OPTIMIZE TABLE `{".$table['Name']."}`");
-		$status = "<strong>".__("Optimized")."</strong>";
+		$status = "<strong>Optimized!</strong>";
 	}
 
 	$tablelist .= format(
@@ -47,29 +47,24 @@ foreach($tables as $table)
 write(
 "
 <table class=\"outline margin\">
-	<tr class=\"header0\">
-		<th colspan=\"7\">
-			".__("Table Status")."
-		</th>
-	</tr>
 	<tr class=\"header1\">
 		<th>
-			".__("Name")."
+			Table
 		</th>
 		<th>
-			".__("Rows")."
+			Rows
 		</th>
 		<th>
-			".__("Overhead")."
+			Overhead
 		</th>
 		<th>
-			".__("Final Status")."
+			Final status
 		</th>
 	</tr>
 	{0}
 	<tr class=\"header0\">
 		<th colspan=\"7\" style=\"font-size: 130%;\">
-			".__("Excess trimmed: {1} bytes")."
+			Excess trimmed: {1} bytes
 		</th>
 	</tr>
 </table>

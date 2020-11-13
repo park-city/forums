@@ -7,17 +7,17 @@ if(NumRows($rUser))
 else
 	Kill(__("Unknown user ID."));
 
-$title = __("Thread list");
-
 $uname = $user["name"];
 if($user["displayname"])
 	$uname = $user["displayname"];
 
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry(__("Member list"), "memberlist"));
-$crumbs->add(new PipeMenuHtmlEntry(userLink($user)));
-$crumbs->add(new PipeMenuTextEntry(__("Threads")));
-makeBreadcrumbs($crumbs);
+$title = $uname."'s threads";
+
+$crumbo = array();
+$crumbo['Members'] = actionLink('memberlist');
+$crumbo[$uname] = actionLink("profile", $user['id']);
+$crumbo['Threads'] = '';
+$layout_crumbs = MakeCrumbs($crumbo);
 
 $total = FetchResult("SELECT
 						count(*)
@@ -62,7 +62,7 @@ if(!$ppp) $ppp = 20;
 if(NumRows($rThreads))
 	echo listThreads($rThreads, false, true);
 else
-	Alert(__("No threads found."), __("Error"));
+	Kill("This user hasn't made any threads.");
 
 if($pagelinks)
 	Write("<div class=\"smallFonts pages\">".__("Pages:")." {0}</div>", $pagelinks);

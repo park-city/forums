@@ -48,21 +48,21 @@ if ($loguserid)
 	}
 }
 
-$links = new PipeMenu();
+$links = array();
 
 if($loguserid)
 {
-	$links->add(new PipeMenuLinkEntry("Mark forum read", "forum", $fid, "action=markasread", "ok"));
+	$links[] = actionLinkTagItem('Mark forum read', 'forum', $fid, 'action=markasread', 'ok');
 	
 	if($forum['minpowerthread'] <= $loguser['powerlevel'])
-		$links->add(new PipeMenuLinkEntry("New thread", "newthread", $fid, "", "edit"));
+		$links[] = actionLinkTagItem('New thread', 'newthread', $fid, '', 'edit');
 }
 
-makeLinks($links);
+$crumbs = array();
+if($config['mainpage'] != 'board') $crumbs['Forums'] = actionLink('board');
+$crumbs[$forum['title']] = actionLink('forum', $fid);
 
-$crumbs = new PipeMenu();
-makeForumCrumbs($crumbs, $forum);
-makeBreadcrumbs($crumbs);
+makeCrumbs($crumbs, $links);
 
 $OnlineUsersFid = $fid;
 

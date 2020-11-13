@@ -1,7 +1,5 @@
 <?php
 
-$title = "New reply";
-
 if(!$loguserid) Kill("You must be logged in to post.");
 if($loguser['powerlevel'] < 0) Kill("You're banned. You can't post.");
 
@@ -39,6 +37,8 @@ if($forum['minpowerreply'] > $loguser['powerlevel'])
 if($thread['closed'] && $loguser['powerlevel'] < 3)
 	Kill("This thread is locked.");
 
+$title = "New reply";
+
 $OnlineUsersFid = $fid;
 
 write(
@@ -50,11 +50,14 @@ write(
 
 $tags = ParseThreadTags($thread['title']);
 setUrlName("thread", $thread["id"], $thread["title"]);
-$crumbs = new PipeMenu();
-makeForumCrumbs($crumbs, $forum);
-$crumbs->add(new PipeMenuHtmlEntry(makeThreadLink($thread)));
-$crumbs->add(new PipeMenuTextEntry($title));
-makeBreadcrumbs($crumbs);
+
+$crumbo = array();
+if($config['mainpage'] != 'board') $crumbo['Forums'] = actionLink('board');
+$crumbo[$forum['title']] = actionLink('forum', $fid);
+$crumbo[$thread['title']] = actionLink('thread', $tid);
+$crumbo[$title] = '';
+
+$layout_crumbs = MakeCrumbs($crumbo, $linko);
 
 
 if(isset($_POST['actionpreview']))

@@ -1,5 +1,5 @@
 <?php
-//  AcmlmBoard XD support - System feedback
+if(!defined('DINNER')) die();
 
 function Debug($s)
 {

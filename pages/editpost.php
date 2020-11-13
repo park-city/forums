@@ -1,7 +1,5 @@
 <?php
 
-$title = 'Edit post';
-
 if(!$loguserid)
 	Kill(__("You must be logged in to edit your posts."));
 
@@ -71,14 +69,18 @@ if(!CanMod($loguserid, $fid) && $post['user'] != $loguserid)
 if($thread['closed'] && !CanMod($loguserid, $fid))
 	Kill(__("This thread is closed."));
 
+$title = 'Edit post';
+
 $tags = ParseThreadTags($thread['title']);
 setUrlName("thread", $thread["id"], $thread["title"]);
 
-$crumbs = new PipeMenu();
-makeForumCrumbs($crumbs, $forum);
-$crumbs->add(new PipeMenuHtmlEntry(makeThreadLink($thread)));
-$crumbs->add(new PipeMenuTextEntry($title));
-makeBreadcrumbs($crumbs);
+$crumbo = array();
+if($config['mainpage'] != 'board') $crumbo['Forums'] = actionLink('board');
+$crumbo[$forum['title']] = actionLink('forum', $fid);
+$crumbo[$thread['title']] = actionLink('thread', $tid);
+$crumbo[$title] = '';
+
+$layout_crumbs = MakeCrumbs($crumbo, $linko);
 
 write("
 	<script type=\"text/javascript\">

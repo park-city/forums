@@ -26,10 +26,8 @@ function isValidPassword($password, $hash, $uid)
 }
 
 $title = "Login";
-
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry($title, "login"));
-makeBreadcrumbs($crumbs);
+$crumbo = array($title => actionLink('login'));
+$layout_crumbs = MakeCrumbs($crumbo);
 
 if($_POST['action'] == "logout")
 {

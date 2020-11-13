@@ -1,17 +1,16 @@
 <?php
-//  AcmlmBoard XD - IP ban management tool
-//  Access: administrators only
-
-$title = __("IP bans");
 
 AssertForbidden("editIPBans");
 
 if($loguser['powerlevel'] < 3)
-	Kill(__("Only administrators get to manage IP bans."));
+	Kill('Access denied.');
 
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry(__("IP bans"), "ipbans"));
-makeBreadcrumbs($crumbs);
+$title = 'IP bans';
+
+$crumbo = array();
+$crumbo['Admin'] = actionLink('admin');
+$crumbo[$title] = actionLink('ipbans');
+$layout_crumbs = MakeCrumbs($crumbo);
 
 if(isset($_POST['actionadd']))
 {

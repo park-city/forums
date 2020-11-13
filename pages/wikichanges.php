@@ -1,13 +1,16 @@
 <?php
 
+if(!$config['enableWiki'])
+	die(header("Location: ".actionLink("404")));
+
 require './lib/wiki.php';
 
 $title = 'Wiki &raquo; Recent changes';
 
-$crumbs = new PipeMenu();
-$crumbs->add(new PipeMenuLinkEntry(__("Wiki"), "wiki"));
-$crumbs->add(new PipeMenuLinkEntry(__("Recent changes"), "wikichanges"));
-makeBreadcrumbs($crumbs);
+$crumbo = array('Wiki' => actionLink('wiki'));
+$crumbo['Recent changes'] = '';
+
+$layout_crumbs = MakeCrumbs($crumbo, $linko);
 
 $mydatefmt = 'm-d-Y';
 if ($loguserid) $mydatefmt = $loguser['dateformat'];

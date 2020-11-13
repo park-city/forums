@@ -1,8 +1,9 @@
 <?php
-if(isset($_GET['error'])) die("gec");
+define('DINNER', 1);
+if(isset($_GET['error'])) die("blaster");
 
 $ajaxPage = TRUE;
-include("lib/common.php");
+include(__DIR__."/lib/common.php");
 
 $full = GetFullURL();
 $here = substr($full, 0, strrpos($full, "/"))."/";

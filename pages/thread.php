@@ -32,7 +32,7 @@ if(NumRows($rFora))
 	$forum = Fetch($rFora);
 	if($forum['minpower'] > $pl)
 	{
-		if($forum["id"] == 5)
+		if($forum["id"] == $config['trashforum'])
 			Kill("This thread does not exist.");
 		else
 			Kill("You are not allowed to browse this forum.");
@@ -54,41 +54,36 @@ if(isset($_GET['from']))
 else
 	$fromstring = "";
 
-$links = new PipeMenu();
+$links = array();
 if($loguserid)
 {
-	if($loguser['powerlevel'] < 0)
-		$links -> add(new PipeMenuTextEntry(""));
-	else if(IsAllowed("makeReply", $tid) && (!$thread['closed'] || $loguser['powerlevel'] > 2))
-		$links -> add(new PipeMenuLinkEntry("New reply", "newreply", $tid, "", "edit"));
-	else if(IsAllowed("makeReply", $tid))
-		$links -> add(new PipeMenuTextEntry("Thread closed."));
+	if(IsAllowed("makeReply", $tid) && (!$thread['closed'] || $loguser['powerlevel'] > 2))
+		$links[] = actionLinkTagItem('New reply', 'newreply', $tid, '', 'edit');
 
 	if(CanMod($loguserid,$forum['id']) && IsAllowed("editThread", $tid))
 	{
-		$links -> add(new PipeMenuLinkEntry("Edit thread", "editthread", $tid, "", "pencil"));
+		$links[] = actionLinkTagItem('Edit thread', 'editthread', $tid, '', 'pencil');
 		if($thread['closed'])
-			$links -> add(new PipeMenuLinkEntry("Unlock", "editthread", $tid, "action=open&key=".$loguser['token'], "unlock"));
+			$links[] = actionLinkTagItem('Open', 'editthread', $tid, 'action=open&key='.$loguser['token'], 'unlock');
 		else
-			$links -> add(new PipeMenuLinkEntry("Lock", "editthread", $tid, "action=close&key=".$loguser['token'], "lock"));
+			$links[] = actionLinkTagItem('Close', 'editthread', $tid, 'action=close&key='.$loguser['token'], 'unlock');
 		if($thread['sticky'])
-			$links -> add(new PipeMenuLinkEntry("Unstick", "editthread", $tid, "action=unstick&key=".$loguser['token'], "pushpin"));
+			$links[] = actionLinkTagItem('Unstick', 'editthread', $tid, 'action=unstick&key='.$loguser['token'], 'pushpin');
 		else
-			$links -> add(new PipeMenuLinkEntry("Stick", "editthread", $tid, "action=stick&key=".$loguser['token'], "pushpin"));
-
-		if($forum['id'] != 5)
-			$links -> add(new PipeMenuLinkEntry("Trash", "editthread", $tid, "action=trash&key=".$loguser['token'], "trash"));
+			$links[] = actionLinkTagItem('Stick', 'editthread', $tid, 'action=stick&key='.$loguser['token'], 'pushpin');
+		if($forum['id'] != $config['trashforum'])
+			$links[] = actionLinkTagItem("Trash", "editthread", $tid, "action=trash&key=".$loguser['token'], "trash");
 	}
 	else if($thread['user'] == $loguserid)
-		$links -> add(new PipeMenuLinkEntry("Edit thread", "editthread", $tid, "", "pencil"));
+		$links[] = actionLinkTagItem('Edit thread', 'editthread', $tid, '', 'pencil');
 }
 
-makeLinks($links);
+$crumbs = array();
+if(MAIN_PAGE != 'board') $crumbs['Forums'] = actionLink('board');
+$crumbs[$forum['title']] = actionLink('forum', $fid);
+$crumbs[$title] = actionLink('thread', $tid);
 
-$crumbs = new PipeMenu();
-makeForumCrumbs($crumbs, $forum);
-$crumbs->add(new PipeMenuLinkEntry($title, "thread", $tid));
-makeBreadcrumbs($crumbs);
+makeCrumbs($crumbs, $links);
 
 write(
 "

@@ -1,5 +1,6 @@
 <?php
-// probably needs to be updated
+if(!defined('DINNER')) die();
+
 $bots = array(
 	"Microsoft URL Control",
 	"Yahoo! Slurp",
@@ -114,7 +115,7 @@ if($loguser)
 }
 else
 {
-	$loguser = array("name"=>"", "powerlevel"=>0, "theme"=>$config['theme'],
+	$loguser = array("name"=>"", "primarygroup"=>DEFAULT_GROUP, "powerlevel"=>DEFAULT_GROUP, "theme"=>DEFAULT_THEME,
 		"dateformat"=>"m-d-y", "timeformat"=>"h:i A", "timezone"=>0, "blocklayouts"=>0,
 		'token'=>hash('sha1', rand()));
 	$loguserid = 0;
