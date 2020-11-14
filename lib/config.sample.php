@@ -25,11 +25,6 @@ define('ALWAYS_MINIPIC',  false); // Always show users' minipics!
 define('DATE_FORM', 'm-d-y'); // Default date format
 define('TIME_FORM', 'g:i A'); // Default time format
 
-// Power levels
-define('DEFAULT_GROUP', 0);
-define('ROOT_GROUP', 4);
-define('BANNED_GROUP', -1);
-
 // Forums
 define('NEWS_FORUM',  7); // Set to 0 to disable.
 define('TRASH_FORUM', 5);
@@ -39,7 +34,15 @@ define('ENABLE_SYNDROMES',true);
 define('ENABLE_UPLOADER', true);
 define('ENABLE_WIKI',     true);
 
-// dumb compatibility no touchy
+// Power levels, avoid touching
+define('BANNED_GROUP', -1);
+define('DEFAULT_GROUP', 0);
+define('LMOD_GROUP', 1);
+define('MOD_GROUP', 2);
+define('ADMIN_GROUP', 3);
+define('ROOT_GROUP', 4);
+
+// Compatibility
 
 $config = array();
 

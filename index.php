@@ -1,12 +1,11 @@
 <?php
 define('DINNER', 'BLASTER');
-header('X-Frame-Options: DENY');
+$starttime = microtime(true);
 
 $ajaxPage = false;
-if(isset($_GET["ajax"]))
-	$ajaxPage = true;
+if(isset($_GET["ajax"])) $ajaxPage = true;
 
-require('lib/common.php');
+require(__DIR__.'/lib/common.php');
 
 $useBuffering = true;
 
@@ -25,11 +24,11 @@ if(isset($argv))
 if (isset($_GET['page']))
 	$page = $_GET["page"];
 else
-	$page = $mainPage;
+	$page = MAIN_PAGE;
 if(!ctype_alnum($page))
-	$page = $mainPage;
+	$page = MAIN_PAGE;
 
-if($page == $mainPage)
+if($page == MAIN_PAGE)
 {
 	if(isset($_GET['fid']) && (int)$_GET['fid'] > 0 && !isset($_GET['action']))
 		die(header("Location: ".actionLink("forum", (int)$_GET['fid'])));
@@ -58,7 +57,7 @@ try {
 		{
 			throw $e;
 		}
-		require('pages/404.php');
+		require(__DIR__.'/pages/404.php');
 	}
 }
 catch(KillException $e) {
@@ -84,26 +83,27 @@ setLastActivity();
 ob_start();
 ob_end_clean();
 
-if($title != "")
-	$layout_title = " &raquo; ".$title;
+$layout_title = BOARD_NAME;
+if($title != "") $layout_title .= " &raquo; ".$title;
 
 // HEADER
 
 $banners = glob('img/banner/*.*');
 $banner = array_rand($banners);
 
-$layout_navigation  = '<li><a href="https://park-city.club">Home</a></li>';
-$layout_navigation .= '<li><a href="/?page=board">Forums</a></li>';
+$layout_navigation  = '<li><a href="/?page='.MAIN_PAGE.'">Home</a></li>';
+if(MAIN_PAGE != 'board')
+	$layout_navigation .= '<li><a href="/?page=board">Forums</a></li>';
 $layout_navigation .= '<li><a href="/?page=memberlist">Members</a></li>';
-$layout_navigation .= '<li><a href="/?page=lastposts">Feed</a></li>';
+$layout_navigation .= '<li><a href="/?page=lastposts">Latest posts</a></li>';
 $layout_navigation .= '<li><a href="/?page=ranks">Ranks</a></li>';
-$layout_navigation .= '<li><a href="/?page=wiki">Wiki</a></li><br>';
+$layout_navigation .= '<br>';
 
 if($loguserid)
 {
 	$layout_navigation .= '<li>'.userLink($loguser).'</li>';
 	$layout_navigation .= '<li><a href="/?page=editprofile">Settings</a></li>';
-	if($loguser['powerlevel'] == 4) $layout_navigation .= '<li><a href="/?page=admin">Admin</a></li>';
+	if($loguser['powerlevel'] >= ADMIN_GROUP) $layout_navigation .= '<li><a href="/?page=admin">Admin</a></li>';
 
 	if(!isset($_POST['id']) && isset($_GET['id']))
 		$_POST['id'] = (int)$_GET['id'];
@@ -112,8 +112,6 @@ if($loguserid)
 } else {
 	$layout_navigation .= '<li><a href="/?page=register">Register</a></li><li><a href="/?page=login">Login</a></li>';
 }
-
-$layout_navigation .= '</ul>';
 
 // BREADCRUMBS
 
@@ -186,18 +184,11 @@ $layout_stats = $statData["numThreads"].' threads and '.$statData["numPosts"].' 
 if ($mobileLayout)
 	$layout_footer = '<div class="center smallFonts"><a href="#" onclick="enableMobileLayout(-1); return false;" rel="nofollow">Disable mobile layout</a></div>';
 else
-	$layout_footer = '
-			<table id="footer" class="outline margin">
-				<tr class="cell0">
-					<td>
-						<span style="float:right;text-align:right;">'.$layout_stats.'</span>
+	$layout_footer = '<span style="float:right;text-align:right;">'.$layout_stats.'</span>
 						<a href="'.$boardroot.'"><img src="/img/btn/parkcity.gif" style="width:88px;height:31px;float:left;margin-right:4px;"></a>Acmlmboard XD 3.14<br>
-						<a href="#" onclick="enableMobileLayout(1); return false;" rel="nofollow">Enable mobile layout</a>
-					</td>
-				</tr>
-			</table>';
+						<a href="#" onclick="enableMobileLayout(1); return false;" rel="nofollow">Enable mobile layout</a>';
 			
-//THEMES
+// THEMES
 
 $themecode = array();
 
@@ -211,33 +202,32 @@ $layout_css .= htmlspecialchars($loguser['css']);
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Park City<?php print $layout_title?></title>
-	<meta name="keywords" content="park city forum forums board acmlmboard acmlm">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title><?=$layout_title?></title>
+	<meta name="keywords" content="<?=META_TAGS;?>">
+	<meta name="description" content="<?=META_DESC;?>">
 
-	<link href="/js/spectrum.css" rel="stylesheet">
-	<link href="/css/font-awesome.min.css" rel="stylesheet">
+	<link href="<?=URL_ROOT;?>js/spectrum.css" rel="stylesheet">
+	<link href="<?=URL_ROOT;?>css/font-awesome.min.css" rel="stylesheet">
+	
+	<script type="text/javascript" src="<?=URL_ROOT;?>js/jquery.js"></script>
+	<script type="text/javascript" src="<?=URL_ROOT;?>js/tricks.js"></script>
+	<script type="text/javascript" src="<?=URL_ROOT;?>js/jquery.tablednd_0_5.js"></script>
+	<script type="text/javascript" src="<?=URL_ROOT;?>js/jquery.scrollTo-1.4.2-min.js"></script>
+	<script type="text/javascript" src="<?=URL_ROOT;?>js/spectrum.js"></script>
+	<script type="text/javascript">boardroot = <?=json_encode(URL_ROOT);?>;</script>
+
 	<link href="/font/overpass.css" rel="stylesheet">
     <link href="/font/overpass-mono.css" rel="stylesheet">
 	
-	<link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png" />
+	<link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
 	
-	<link rel="manifest" href="/site.webmanifest" />
-    <meta name="msapplication-TileColor" content="#603cba" />
+	<link rel="manifest" href="site.webmanifest">
+    <meta name="msapplication-TileColor" content="#603cba">
 	
-	<script type="text/javascript" src="/js/jquery.js"></script>
-	<script type="text/javascript" src="/js/tricks.js"></script>
-	<script type="text/javascript" src="/js/jquery.tablednd_0_5.js"></script>
-	<script type="text/javascript" src="/js/jquery.scrollTo-1.4.2-min.js"></script>
-	<script type="text/javascript" src="/js/spectrum.js"></script>
-	<script type="text/javascript">
-		boardroot = <?php print json_encode($boardroot); ?>;
-	</script>
-	
-	<!-- this is clearly the best way of doing things -->
 	<style id="theme_css"><?php print $layout_css; ?></style>
 </head>
 <body<?php if($mobileLayout) print ' id="mobile"'; ?>>
@@ -245,27 +235,33 @@ $layout_css .= htmlspecialchars($loguser['css']);
 		<table class="outline margin center" id="header">
 			<tr class="cell0">
 				<td>
-					<a href="/"><img id="theme_banner" src="<?php echo $boardroot.$banners[$banner]; ?>" alt="Park City"></a>
+					<a href="/"><img id="theme_banner" src="<?=$boardroot.$banners[$banner];?>" alt="<?=BOARD_NAME;?>"></a>
 				</td>
 			</tr>
 			<tr class="cell1">
 				<td>
-					<ul class="mainMenu"><?php print $layout_navigation; ?></ul>
+					<ul class="mainMenu"><?=$layout_navigation;?></ul>
 				</td>
 			</tr>
 			<tr class="cell0">
 				<td>
-					<span class="smallFonts"><?php print OnlineUsers(); ?></span>
+					<span class="smallFonts"><?=OnlineUsers();?></span>
 				</td>
 			</tr>
 		</table>
 		<form action="/?page=login" method="post" id="logout">
 			<input type="hidden" name="action" value="logout" />
 		</form>
-		<?php print $layout_crumbs; ?>
-		<div id="page_contents"><?php print $layout_contents;?></div>
-		<?php print $layout_crumbs; ?>
-		<?php print $layout_footer; ?>
+		<?=$layout_crumbs;?>
+		<div id="page_contents"><?=$layout_contents;?></div>
+		<?=$layout_crumbs;?>
+		<table id="footer" class="outline margin">
+			<tr>
+				<td>
+					<?=$layout_footer;?>
+				</td>
+			</tr>
+		</table>
 	</div>
 </body>
 </html>

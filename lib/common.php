@@ -1,7 +1,18 @@
 <?php
+if(!defined('DINNER')) die();
+
+header('Cache-control: no-cache, private');
+header('X-Frame-Options: DENY');
+
 error_reporting(E_ALL ^ E_NOTICE | E_STRICT);
 
+define('BOARD_ROOT', dirname(__DIR__).'/');
+define('DATA_DIR', BOARD_ROOT.'data/');
+
 $boardroot = preg_replace('{/[^/]*$}', '/', $_SERVER['SCRIPT_NAME']);
+
+define('URL_ROOT', $boardroot);
+define('DATA_URL', URL_ROOT.'data/');
 
 if (get_magic_quotes_gpc())
 {
@@ -26,15 +37,17 @@ function usectime()
 	$t = gettimeofday();
 	return $t['sec'] + ($t['usec'] / 1000000);
 }
-$timeStart = usectime();
 
 if (!function_exists('password_hash'))
 	require_once('password.php');
+	
+$dataDir = "data/";
+$dataUrl = $boardroot."data/";
 
 include("config.php");
-include("dirs.php");
 include("debug.php");
 include("mysql.php");
+
 if(!sqlConnect())
 	die("Can't connect to the database!");
 if(!fetch(query("SHOW TABLES LIKE '{misc}'")))
@@ -49,8 +62,13 @@ include("links.php");
 
 class KillException extends Exception { }
 date_default_timezone_set("GMT");
+$timeStart = usectime();
 
 $title = "";
+
+$thisURL = $_SERVER['SCRIPT_NAME'];
+if($q = $_SERVER['QUERY_STRING'])
+	$thisURL .= "?$q";
 
 include("browsers.php");
 include("pluginsystem.php");
@@ -69,5 +87,3 @@ $theme = $loguser['theme'];
 include('layout.php');
 include("pipemenubuilder.php");
 include("lists.php");
-
-$mainPage = $config['mainpage'];
