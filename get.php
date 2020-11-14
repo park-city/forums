@@ -1,5 +1,5 @@
 <?php
-define('DINNER', 1);
+define('DINNER', 'BLASTER');
 if(isset($_GET['error'])) die("gec");
 
 $ajaxPage = TRUE;

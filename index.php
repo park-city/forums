@@ -1,5 +1,5 @@
 <?php
-define('DINNER', 1);
+define('DINNER', 'BLASTER');
 header('X-Frame-Options: DENY');
 
 $ajaxPage = false;
