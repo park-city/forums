@@ -1,4 +1,5 @@
 <?php
+if(!defined('DINNER')) die();
 
 define('WIKIXD', 1);
 

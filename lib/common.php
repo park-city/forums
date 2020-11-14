@@ -44,21 +44,21 @@ if (!function_exists('password_hash'))
 $dataDir = "data/";
 $dataUrl = $boardroot."data/";
 
-include("config.php");
-include("debug.php");
-include("mysql.php");
+include(__DIR__."/config.php");
+include(__DIR__."/debug.php");
+include(__DIR__."/mysql.php");
 
 if(!sqlConnect())
 	die("Can't connect to the database!");
 if(!fetch(query("SHOW TABLES LIKE '{misc}'")))
 	die("Can't show tables like misc!");
 
-include("mysqlfunctions.php");
-include("feedback.php");
-include("language.php");
-include("write.php");
-include("snippets.php");
-include("links.php");
+include(__DIR__."/mysqlfunctions.php");
+include(__DIR__."/feedback.php");
+include(__DIR__."/language.php");
+include(__DIR__."/write.php");
+include(__DIR__."/snippets.php");
+include(__DIR__."/links.php");
 
 class KillException extends Exception { }
 date_default_timezone_set("GMT");
@@ -70,20 +70,20 @@ $thisURL = $_SERVER['SCRIPT_NAME'];
 if($q = $_SERVER['QUERY_STRING'])
 	$thisURL .= "?$q";
 
-include("browsers.php");
-include("pluginsystem.php");
+include(__DIR__."/browsers.php");
+include(__DIR__."/pluginsystem.php");
 loadFieldLists();
-include("loguser.php");
-include("permissions.php");
-include("ranksets.php");
-include("post.php");
-include("log.php");
-include("onlineusers.php");
-include("htmlfilter.php");
-include("smilies.php");
+include(__DIR__."/loguser.php");
+include(__DIR__."/permissions.php");
+include(__DIR__."/ranksets.php");
+include(__DIR__."/post.php");
+include(__DIR__."/log.php");
+include(__DIR__."/onlineusers.php");
+include(__DIR__."/htmlfilter.php");
+include(__DIR__."/smilies.php");
 
 $theme = $loguser['theme'];
 
-include('layout.php');
-include("pipemenubuilder.php");
-include("lists.php");
+include(__DIR__."/layout.php");
+include(__DIR__."/pipemenubuilder.php");
+include(__DIR__."/lists.php");

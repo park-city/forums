@@ -1,4 +1,6 @@
 <?php
+if(!defined('DINNER')) die();
+
 $bbcode = array(
 	'b' => array(
 		'callback' => 'bbcodeBold',
@@ -218,6 +220,7 @@ function bbcodeURL($dom, $nodes, $arg)
 		$a->setAttribute('href', $arg);
 		bbcodeAppend($a, $nodes);
 	}
+	$a->setAttribute('target', '_blank');
 	return $a;
 }
 

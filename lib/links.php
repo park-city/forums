@@ -1,4 +1,8 @@
 <?php
+if(!defined('DINNER')) die();
+
+$ishttps = ($_SERVER['SERVER_PORT'] == 443);
+$serverport = ($_SERVER['SERVER_PORT'] == ($ishttps?443:80)) ? '' : ':'.$_SERVER['SERVER_PORT'];
 
 function getRefreshActionLink()
 {
@@ -33,45 +37,33 @@ function setUrlName($action, $id, $urlname)
 	$urlNameCache[$action."_".$id] = $urlname;
 }
 
-if($urlRewriting)
-	include("urlrewriting.php");
-else
+function actionLink($action, $id="", $args="", $urlname="")
 {
+	$boardroot = URL_ROOT;
+	if($boardroot == "")
+		$boardroot = "./";
 
-	function actionLink($action, $id="", $args="", $urlname="")
-	{
-		global $boardroot, $mainPage;
-		if($boardroot == "")
-			$boardroot = "./";
+	$res = "";
 
-		$res = "";
+	if($action != MAIN_PAGE)
+		$res .= "&page=$action";
 
-		if($action != $mainPage)
-			$res .= "&page=$action";
+	if($id != "")
+		$res .= "&id=".urlencode($id);
+	if($args)
+		$res .= "&$args";
 
-		if($id != "")
-			$res .= "&id=".urlencode($id);
-		if($args)
-			$res .= "&$args";
-
-		if(strpos($res, "&amp"))
-		{
-			debug_print_backtrace();
-			Kill("Found &amp;amp; in link");
-		}
-
-		if($res == "")
-			return $boardroot;
-		else
-			return $boardroot."?".substr($res, 1);
-	}
+	if($res == "")
+		return $boardroot;
+	else
+		return $boardroot."?".substr($res, 1);
 }
 
-function actionLinkTag($text, $action, $id=0, $args="", $urlname="")
+function actionLinkTag($text, $action, $id=0, $args="", $urlname="", $icon="")
 {
 	return '<a href="'.htmlentities(actionLink($action, $id, $args, $urlname)).'">'.$text.'</a>';
 }
-function actionLinkTagItem($text, $action, $id=0, $args="", $urlname="")
+function actionLinkTagItem($text, $action, $id=0, $args="", $urlname="", $icon="")
 {
 	return '<li><a href="'.htmlentities(actionLink($action, $id, $args, $urlname)).'">'.$text.'</a></li>';
 }
@@ -98,14 +90,13 @@ function redirect($url)
 
 function resourceLink($what)
 {
-	global $boardroot;
-	return "$boardroot$what";
+	return URL_ROOT.$what;
 }
 
 function themeResourceLink($what)
 {
-	global $theme, $boardroot;
-	return $boardroot."themes/$theme/$what";
+	global $theme;
+	return URL_ROOT."themes/$theme/$what";
 }
 
 function getMinipicTag($user)
@@ -180,19 +171,17 @@ function makeThreadLink($thread)
 	$link = actionLinkTag($tags[0], "thread", $thread["id"], "", $tags[0]);
 	$tags = $tags[1];
 
-	return $link.' '.$tags.' ';
-
+	if (TAGS_DIRECTION == 'Left')
+		return $tags." ".$link;
+	else
+		return $link." ".$tags;
 }
+
 function makeFromUrl($url, $from)
 {
 	if($from == 0)
 	{
-		//This is full of hax.
-		$url = str_replace("&amp;from=", "", $url);
-		$url = str_replace("&from=", "", $url);
-		$url = str_replace("?from=", "", $url);
-		if(endsWith($url, "?"))
-			$url = substr($url, 0, strlen($url)-1);
+		$url = preg_replace('@(?:&amp;|&|\?)\w+=$@', '', $url);
 		return $url;
 	}
 	else return $url.$from;
@@ -271,8 +260,8 @@ function pageLinksInverted($url, $epp, $from, $total)
 
 function absoluteActionLink($action, $id=0, $args="")
 {
-	$https = isHttps();
-	return ($https?"https":"http") . "://" . $_SERVER['SERVER_NAME'].actionLink($action, $id, $args);
+	global $serverport;
+	return ($https?"https":"http") . "://" . $_SERVER['SERVER_NAME'].$serverport.dirname($_SERVER['PHP_SELF']).substr(actionLink($action, $id, $args), 1);
 }
 
 function getRequestedURL()
@@ -280,30 +269,26 @@ function getRequestedURL()
 	return $_SERVER['REQUEST_URI'];
 }
 
-function getServerURL()
+function getServerDomainNoSlash($https = false)
 {
-	return getServerURLNoSlash()."/";
+	global $serverport;
+	return ($https?"https":"http") . "://" . $_SERVER['SERVER_NAME'].$serverport;
 }
 
-function getServerURLNoSlash()
+function getServerURL($https = false)
 {
-	global $boardroot;
-	$https = isHttps();
-	$stdport = $https?443:80;
-	$port = "";
-	if($stdport != $_SERVER["SERVER_PORT"] && $_SERVER["SERVER_PORT"])
-		$port = ":".$_SERVER["SERVER_PORT"];
-	return ($https?"https":"http") . "://" . $_SERVER['HTTP_HOST'] . $port . substr($boardroot, 0, strlen($boardroot)-1);
+	return getServerURLNoSlash($https)."/";
 }
 
-function getFullRequestedURL()
+function getServerURLNoSlash($https = false)
 {
-	$https = isHttps();
-	$stdport = $https?443:80;
-	$port = "";
-	if($stdport != $_SERVER["SERVER_PORT"] && $_SERVER["SERVER_PORT"])
-		$port = ":".$_SERVER["SERVER_PORT"];
-	return ($https?"https":"http") . "://" . $_SERVER['HTTP_HOST'] . $port . $_SERVER['REQUEST_URI'];
+	global $serverport;
+	return ($https?"https":"http") . "://" . $_SERVER['SERVER_NAME'].$serverport . substr(URL_ROOT, 0, strlen(URL_ROOT)-1);
+}
+
+function getFullRequestedURL($https = false)
+{
+	return getServerURL($https) . $_SERVER['REQUEST_URI'];
 }
 
 function isHttps()

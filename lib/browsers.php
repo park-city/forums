@@ -1,4 +1,5 @@
 <?php
+if(!defined('DINNER')) die();
 
 //$isFirefox = FALSE;
 //$isIE6 = FALSE;

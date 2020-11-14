@@ -1,4 +1,6 @@
 <?php
+if(!defined('DINNER')) die();
+
 function loadSmilies()
 {
 	global $smilies, $smiliesReplaceOrig, $smiliesReplaceNew;

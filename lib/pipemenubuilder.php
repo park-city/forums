@@ -1,5 +1,5 @@
 <?php
-//PipeMenuBuilder class -- It builds menus.
+if(!defined('DINNER')) die();
 
 class PipeMenu {
 	private $classNames = array("pipemenu");

@@ -1,4 +1,6 @@
 <?php
+if(!defined('DINNER')) die();
+
 $queries = 0;
 $dberror = "";
 function sqlConnect()

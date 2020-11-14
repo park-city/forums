@@ -1,4 +1,5 @@
 <?php
+if(!defined('DINNER')) die();
 
 function makeForumListing($parent, $page=0)
 {

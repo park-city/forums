@@ -1,4 +1,5 @@
 <?php
+if(!defined('DINNER')) die();
 
 require_once 'bbcode.php';
 

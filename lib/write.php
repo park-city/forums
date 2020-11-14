@@ -1,4 +1,5 @@
 <?php
+if(!defined('DINNER')) die();
 
 // TODO: Kill this.
 

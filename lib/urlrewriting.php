@@ -1,4 +1,5 @@
 <?php
+if(!defined('DINNER')) die();
 
 function actionLink($action, $id="", $args="", $urlname="")
 {

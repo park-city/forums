@@ -1,4 +1,5 @@
 <?php
+if(!defined('DINNER')) die();
 
 include_once("write.php");
 

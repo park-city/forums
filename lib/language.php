@@ -1,4 +1,5 @@
 <?php
+if(!defined('DINNER')) die();
 
 $language = "en_US";
 

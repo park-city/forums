@@ -3,7 +3,7 @@ define('DINNER', 'BLASTER');
 if(isset($_GET['error'])) die("gec");
 
 $ajaxPage = TRUE;
-include("lib/common.php");
+include(__DIR__."/lib/common.php");
 
 $full = GetFullURL();
 $here = substr($full, 0, strrpos($full, "/"))."/";

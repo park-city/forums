@@ -1,4 +1,6 @@
 <?php
+if(!defined('DINNER')) die();
+
 $logText = array
 (
 	// register/login actions
@@ -31,19 +33,12 @@ $logText = array
 	// admin actions
 	'edituser' => '{user} edited {user2 s} profile',
 	'usercomment' => '{user} commented on {user2 s} profile',
-	'pmsnoop' => '{user} read {user2 s} PM: {pm}',
 	'editsettings' => '{user} edited the board\'s settings',
-	'editplugsettings' => '{user} edited the settings of plugin {text}',
-	'enableplugin' => '{user} enabled plugin {text}',
-	'disableplugin' => '{user} disabled plugin {text}',
 	//Add other log actions in here
 );
 
 // CONSIDER: most of the log texts if not all, are going to be like "{user} did action foo"
 // take out the {user} part and put it in a separate column on log.php?
-
-// TODO move the fields/callbacks from pages/log.php here and make everything use the same plugin bucket?
-$bucket = 'log_texts'; include('lib/pluginloader.php');
 
 function logAction($type, $params)
 {
@@ -81,11 +76,7 @@ function doLogList($cond)
 		'post' => array('table' => 'posts', 'key' => 'id', 'fields' => 'id'),
 		'forum' => array('table' => 'forums', 'key' => 'id', 'fields' => 'id,title'),
 		'forum2' => array('table' => 'forums', 'key' => 'id', 'fields' => 'id,title'),
-		'pm' => array('table' => 'pmsgs', 'key' => 'id', 'fields' => 'id'),
 	);
-
-	$bucket = 'log_fields'; include('lib/pluginloader.php');
-
 
 	$joinfields = '';
 	$joinstatements = '';
@@ -223,9 +214,3 @@ function logFormat_forum2($data)
 {
 	return actionLinkTag($data['forum2_title'], 'forum', $data['forum2_id'], "", $data['forum2_title']);
 }
-
-function logFormat_pm($data)
-{
-	return actionLinkTag('PM #'.$data['pm_id'], 'showprivate', $data['pm_id'], 'snoop=1');
-}
-

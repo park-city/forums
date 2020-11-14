@@ -1,4 +1,5 @@
 <?php
+if(!defined('DINNER')) die();
 
 /*
 //Improved permissions system ~Nina
