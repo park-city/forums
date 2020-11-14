@@ -446,10 +446,10 @@ function newPostForm($lepost)
 		echo '
 			<table style="width:100%;">
 				<tr>
-					<td class="penis" style="vertical-align:top;">
+					<td class="safe" style="vertical-align:top;">
 						'.$form.'
 					</td>
-					<td class="penis" style="width:25%;vertical-align: top;">
+					<td class="safe" style="width:25%;vertical-align: top;">
 						<table class="outline margin">
 							<tr class="header0"><th>Cheatsheet</th></tr>
 							<tr class="cell0 left"><td>

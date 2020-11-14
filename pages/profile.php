@@ -84,8 +84,7 @@ $foo = array();
 //	$foo["Rank"] = $currentRank;
 //if($toNextRank)
 //	$foo["Rank"] .= $toNextRank;
-//$foo["Penis length"] = GetRank('levels', $user["posts"]);
-$foo[__("Power")] = getPowerlevelName($user['powerlevel']);
+$foo["Power"] = getPowerlevelName($user['powerlevel']);
 $foo["Posts and threads"] = $numposts.' and '.$numthreads;
 $foo["Registered"] = format("{0} ({1} ago)", formatdate($user['regdate']), TimeUnits($daysKnown*86400));
 
