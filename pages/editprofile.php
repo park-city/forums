@@ -48,6 +48,8 @@ foreach($timeformats as $format)
 
 $dispname = $user['displayname'] ? $user['displayname'] : $user['name'];
 
+$powerlevels = array(-1 => "-1 - Banned", "0 - Normal user", "1 - Local mod", "2 - Moderator", "3 - Administrator", "4 - Super Admin", "5 - uhh");
+
 $general = array(
 	"appearance" => array(
 		"name" => "Appearance",
@@ -189,11 +191,17 @@ $account = array(
 		),
 	),
 	"admin" => array(
-		"name" => "Administration",
+		"name" => __("Administrative stuff"),
 		"class" => "needpass",
 		"items" => array(
+			"powerlevel" => array(
+				"caption" => __("Power level"),
+				"type" => "select",
+				"options" => $powerlevels,
+				"callback" => "HandlePowerlevel",
+			),
 			"globalblock" => array(
-				"caption" => "Ban post layout",
+				"caption" => __("Ban post layout"),
 				"type" => "checkbox",
 			),
 		),
@@ -649,6 +657,33 @@ function HandlePowerlevel($field, $item)
 	{
 		$newPL = (int)$_POST['powerlevel'];
 		$oldPL = $user['powerlevel'];
+
+		if($newPL == 5)
+			; //Do nothing -- System won't pick up the phone.
+		else if($newPL == -1)
+		{
+			SendSystemPM($id, __("If you don't know why this happened, feel free to ask the one most likely to have done this. Calmly, if possible."), __("You have been banned."));
+		}
+		else if($newPL == 0)
+		{
+			if($oldPL == -1)
+				SendSystemPM($id, __("Try not to repeat whatever you did that got you banned."), __("You have been unbanned."));
+			else if($oldPL > 0)
+				SendSystemPM($id, __("Try not to take it personally."), __("You have been brought down to normal."));
+		}
+		else if($newPL == 4)
+		{
+			SendSystemPM($id, __("Your profile is now untouchable to anybody but you. You can give root status to anybody else, and can access the RAW UNFILTERED POWERRR of sql.php. Do not abuse this. Your root status can only be removed through sql.php."), __("You are now a root user."));
+		}
+		else
+		{
+			if($oldPL == -1)
+				; //Do nothing.
+			else if($oldPL > $newPL)
+				SendSystemPM($id, __("Try not to take it personally."), __("You have been demoted."));
+			else if($oldPL < $newPL)
+				SendSystemPM($id, __("Congratulations. Don't forget to review the rules regarding your newfound powers."), __("You have been promoted."));
+		}
 	}
 }
 
