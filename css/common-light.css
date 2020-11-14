@@ -27,3 +27,12 @@ div.quote div.quotecontent {
 .mobile-postheader {
 	color: rgba(0,0,0,0.5);
 }
+
+.nuked { color: #1a1a1a; font-weight: bold; }
+
+.table0
+{
+	background: #888;
+	border: 1px solid #1a1a1a;
+	color: #000;
+}

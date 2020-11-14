@@ -34,3 +34,12 @@ input,select,textarea,button { background: rgba(0,0,0,0.35); color: white; borde
 .mobile-postheader {
 	color: rgba(255,255,255,0.5);
 }
+
+.nuked { color: #888888; font-weight: bold; }
+
+.table0
+{
+	background: #1a1a1a;
+	border: 1px solid #888;
+	color: #dedede;
+}

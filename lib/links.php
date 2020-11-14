@@ -120,30 +120,42 @@ function getMinipicTag($user)
 }
 function userLink($user, $showMinipic = false, $customID = false)
 {
-	global $powerlevels;
+	if(!$user['name'])
+		return '<span class="userlink nuked">Deleted User</span>';
+
+	$class = 'userlink';
+	$style = '';
 
 	$fname = ($user['displayname'] ? $user['displayname'] : $user['name']);
 	$fname = htmlspecialchars($fname);
 	$fname = str_replace(" ", "&nbsp;", $fname);
 
-	$classing = 'class="userlink';
-	
-	if($user["hascolor"])
+	if($user['powerlevel'] == BANNED_GROUP)
+		$class .= ' nuked';
+	else
 	{
-		$color = htmlspecialchars($user["color"]);
-		if ($color[0] !== "#")
-			$color = '#'.$color;
+		$minipic = "";
+		if($showMinipic || ALWAYS_MINIPIC)
+			$minipic = getMinipicTag($user);
 		
-		$classing .= '" style="color:'.$color.';"';
-	} else
-		$classing .= ' defacto"';
+		$fname = $minipic.$fname;
+
+		if($user["hascolor"])
+		{
+			$color = htmlspecialchars($user["color"]);
+			if ($color[0] !== "#")
+				$color = '#'.$color;
+
+			$style = 'style="color:'.$color.';"';
+		} else
+			$class .= ' defacto';
+	}
 
 	$title = $user["id"].": ".htmlspecialchars($user['name']);
 	if ($user['pronouns'])
 		$title .= " (".$user['pronouns'].")";
 	
-	$userlink = actionLinkTag("<span $classing title=\"$title\">$fname</span>", "profile", $user["id"], "", $user["name"]);
-	return $userlink;
+	return actionLinkTag('<span class="'.$class.'" '.$style.' title="'.$title.'">'.$minipic.$fname.'</span>', 'profile', $user['id'], '', $user['name']);
 }
 
 function userLinkById($id)

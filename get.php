@@ -1,4 +1,5 @@
 <?php
+define('DINNER', 1);
 if(isset($_GET['error'])) die("gec");
 
 $ajaxPage = TRUE;
