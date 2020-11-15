@@ -14,6 +14,9 @@ $boardroot = preg_replace('{/[^/]*$}', '/', $_SERVER['SCRIPT_NAME']);
 define('URL_ROOT', $boardroot);
 define('DATA_URL', URL_ROOT.'data/');
 
+$dataDir = "data/";
+$dataUrl = $boardroot."data/";
+
 if (get_magic_quotes_gpc())
 {
 	function AutoDeslash($val)
@@ -40,9 +43,6 @@ function usectime()
 
 if (!function_exists('password_hash'))
 	require_once('password.php');
-	
-$dataDir = "data/";
-$dataUrl = $boardroot."data/";
 
 include(__DIR__."/config.php");
 include(__DIR__."/debug.php");
@@ -54,6 +54,9 @@ if(!fetch(query("SHOW TABLES LIKE '{misc}'")))
 	die("Can't show tables like misc!");
 
 include(__DIR__."/mysqlfunctions.php");
+include(__DIR__."/settings.php");
+Settings::load();
+Settings::checkPlugin("main");
 include(__DIR__."/feedback.php");
 include(__DIR__."/language.php");
 include(__DIR__."/write.php");

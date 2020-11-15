@@ -116,7 +116,7 @@ if($loguser)
 else
 {
 	$loguser = array("name"=>"", "powerlevel"=>DEFAULT_GROUP, "theme"=>DEFAULT_THEME,
-		"dateformat"=>"m-d-y", "timeformat"=>"h:i A", "timezone"=>0, "blocklayouts"=>0,
+		"dateformat"=>Settings::get('dateformat'), "timeformat"=>Settings::get('timeformat'), "timezone"=>0, "blocklayouts"=>0,
 		'token'=>hash('sha1', rand()));
 	$loguserid = 0;
 }

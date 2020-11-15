@@ -1,4 +1,6 @@
 <?php
+if(!defined('DINNER')) die();
+
 function endsWith($a, $b){
 	return substr($a, strlen($a) - strlen($b)) == $b;
 }
@@ -26,7 +28,6 @@ function TimeUnits($sec)
 function cdate($format, $date = 0)
 {
 	global $loguser;
-	//$format = 'g:i A - F j, Y';
 	if($date == 0)
 		$date = time();
 	$hours = (int)($loguser['timezone']/3600);
@@ -38,12 +39,12 @@ function cdate($format, $date = 0)
 
 function Report($stuff, $hidden = 0, $severity = 0)
 {
-
+	// kill
 }
 
 function SendSystemPM($to, $message, $title)
 {
-
+	// kill
 }
 
 function Shake()
@@ -114,13 +115,14 @@ function getdateformat()
 	if($loguserid)
 		return $loguser['dateformat'].", ".$loguser['timeformat'];
 	else
-		return "m-d-y, h:i a";
+		return Settings::get('dateformat').', '.Settings::get('timeformat');
 }
 
 function formatdate($date)
 {
 	return cdate(getdateformat(), $date);
 }
+
 function formatdatenow()
 {
 	return cdate(getdateformat());
@@ -130,6 +132,7 @@ function formatBirthday($b)
 {
 	return format("{0} ({1} old)", cdate("F j, Y", $b), Plural(floor((time() - $b) / 86400 / 365.2425), "year"));
 }
+
 function getPowerlevelName($pl) {
 	$powerlevels = array(
 		-1 => "Banned",
@@ -137,8 +140,8 @@ function getPowerlevelName($pl) {
 		1 => "Local mod",
 		2 => "Moderator",
 		3 => "Admin",
-		4 => "Super Admin",
-		5 => "uhh"
+		4 => "Root",
+		5 => "System"
 	);
 	return $powerlevels[$pl];
 }
@@ -150,6 +153,7 @@ function formatIP($ip)
 
 	$res = $ip;
 	$res .=  " " . IP2C($ip);
+	$res = "<nobr>".$res."</nobr>";
 	if($loguser["powerlevel"] >= 3)
 		return actionLinkTag($res, "ipquery", $ip);
 	else
@@ -179,6 +183,71 @@ function IP2C($ip)
 		return " <img src=\"".resourceLink("img/flags/".strtolower($r['cc']).".png")."\" alt=\"".$r['cc']."\" title=\"".$r['cc']."\" />";
 	else
 		return "";
+}
+
+function getBirthdaysText($ret = true)
+{
+	global $luckybastards, $loguser;
+
+	$luckybastards = array();
+	$today = gmdate('m-d', time()+$loguser['timezone']);
+
+	$rBirthdays = Query("select u.birthday, u.(_userfields) from {users} u where u.birthday > 0 and u.primarygroup!={0} order by u.name", Settings::get('bannedGroup'));
+	$birthdays = array();
+	while($user = Fetch($rBirthdays))
+	{
+		$b = $user['birthday'];
+		if(gmdate("m-d", $b) == $today)
+		{
+			$luckybastards[] = $user['u_id'];
+			if ($ret)
+			{
+				$y = gmdate("Y") - gmdate("Y", $b);
+				$birthdays[] = UserLink(getDataPrefix($user, 'u_'))." (".$y.")";
+			}
+		}
+	}
+	if (!$ret) return '';
+	if(count($birthdays))
+		$birthdaysToday = implode(", ", $birthdays);
+	if(isset($birthdaysToday))
+		return __("Birthdays today:")." ".$birthdaysToday;
+	else
+		return "";
+}
+
+function getKeywords($stuff)
+{
+	$common = array('the', 'and', 'that', 'have', 'for', 'not', 'this');
+
+	$stuff = strtolower($stuff);
+	$stuff = str_replace('\'s', '', $stuff);
+	$stuff = preg_replace('@[^\w\s]+@', '', $stuff);
+	$stuff = preg_replace('@\s+@', ' ', $stuff);
+
+	$stuff = explode(' ', $stuff);
+	$stuff = array_unique($stuff);
+	$finalstuff = '';
+	foreach ($stuff as $word)
+	{
+		if (strlen($word) < 3 && !is_numeric($word)) continue;
+		if (in_array($word, $common)) continue;
+
+		$finalstuff .= $word.' ';
+	}
+
+	return substr($finalstuff,0,-1);
+}
+
+function forumRedirectURL($redir)
+{
+	if ($redir[0] == ':')
+	{
+		$redir = explode(':', $redir);
+		return actionLink($redir[1], $redir[2], $redir[3], $redir[4]);
+	}
+	else
+		return $redir;
 }
 
 ?>

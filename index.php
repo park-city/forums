@@ -24,11 +24,11 @@ if(isset($argv))
 if (isset($_GET['page']))
 	$page = $_GET["page"];
 else
-	$page = MAIN_PAGE;
+	$page = Settings::get('mainPage');
 if(!ctype_alnum($page))
-	$page = MAIN_PAGE;
+	$page = Settings::get('mainPage');
 
-if($page == MAIN_PAGE)
+if($page == Settings::get('mainPage'))
 {
 	if(isset($_GET['fid']) && (int)$_GET['fid'] > 0 && !isset($_GET['action']))
 		die(header("Location: ".actionLink("forum", (int)$_GET['fid'])));
@@ -91,26 +91,27 @@ if($title != "") $layout_title .= " &raquo; ".$title;
 $banners = glob('img/banner/*.*');
 $banner = array_rand($banners);
 
-$layout_navigation  = '<li><a href="/?page='.MAIN_PAGE.'">Home</a></li>';
-if(MAIN_PAGE != 'board')
-	$layout_navigation .= '<li><a href="/?page=board">Forums</a></li>';
-$layout_navigation .= '<li><a href="/?page=memberlist">Members</a></li>';
-$layout_navigation .= '<li><a href="/?page=lastposts">Latest posts</a></li>';
-$layout_navigation .= '<li><a href="/?page=ranks">Ranks</a></li>';
+$layout_navigation  = actionLinkTagItem('Home', Settings::get('mainPage'));
+if(Settings::get('mainPage') != 'board')
+	$layout_navigation .= actionLinkTagItem('Forums', 'board');
+$layout_navigation .= actionLinkTagItem('Members', 'memberlist');
+$layout_navigation .= actionLinkTagItem('Latest posts', 'lastposts');
+$layout_navigation .= actionLinkTagItem('Ranks', 'ranks');
 $layout_navigation .= '<br>';
 
 if($loguserid)
 {
 	$layout_navigation .= '<li>'.userLink($loguser).'</li>';
-	$layout_navigation .= '<li><a href="/?page=editprofile">Settings</a></li>';
-	if($loguser['powerlevel'] >= ADMIN_GROUP) $layout_navigation .= '<li><a href="/?page=admin">Admin</a></li>';
+	$layout_navigation .= actionLinkTagItem('Edit profile', 'editprofile');
+	if($loguser['powerlevel'] >= ADMIN_GROUP) $layout_navigation .= actionLinkTagItem('Admin', 'admin');
 
 	if(!isset($_POST['id']) && isset($_GET['id']))
 		$_POST['id'] = (int)$_GET['id'];
 	
 	$layout_navigation .= '<li><a href="/?page="onclick="document.forms[0].submit(); return false;">Logout</a></li>';
 } else {
-	$layout_navigation .= '<li><a href="/?page=register">Register</a></li><li><a href="/?page=login">Login</a></li>';
+	$layout_navigation .= actionLinkTagItem('Register', 'register');
+	$layout_navigation .= actionLinkTagItem('Login', 'login');
 }
 
 // BREADCRUMBS
@@ -169,24 +170,26 @@ if ($crumbs || $links) {
 // FOOTER
 
 $statData = Fetch(Query("SELECT
-	(SELECT COUNT(*) FROM {threads}) AS numThreads,
-	(SELECT COUNT(*) FROM {posts}) AS numPosts,
-	(SELECT COUNT(*) FROM {users}) AS numUsers,
-	(select count(*) from {posts} where date > {0}) AS newToday,
-	(select count(*) from {posts} where date > {1}) AS newLastHour,
-	(select count(*) from {users} where lastposttime > {2}) AS numActive",
-	time() - 86400, time() - 3600, time() - 1209600));
+(SELECT COUNT(*) FROM {threads}) AS numThreads,
+(SELECT COUNT(*) FROM {posts}) AS numPosts,
+(SELECT COUNT(*) FROM {users}) AS numUsers,
+(select count(*) from {posts} where date > {0}) AS newToday,
+(select count(*) from {posts} where date > {1}) AS newLastHour,
+(select count(*) from {users} where lastposttime > {2}) AS numActive",
+time() - 86400, time() - 3600, time() - 1209600));
 
 $percent = $statData["numUsers"] ? ceil((100 / $statData["numUsers"]) * $statData["numActive"]) : 0;
 
 $layout_stats = $statData["numThreads"].' threads and '.$statData["numPosts"].' posts total, '.$statData["newToday"].' posts today ('.$statData["newLastHour"].' last hour)<br>'.$statData["numUsers"].' users, '.$statData["numActive"].' active ('.$percent.'%) - '.number_format($misc['views']).' views';
 
 if ($mobileLayout)
-	$layout_footer = '<div class="center smallFonts"><a href="#" onclick="enableMobileLayout(-1); return false;" rel="nofollow">Disable mobile layout</a></div>';
+	$layout_footer = '
+<div class="center smallFonts"><a href="#" onclick="enableMobileLayout(-1); return false;" rel="nofollow">Disable mobile layout</a></div>';
 else
-	$layout_footer = '<span style="float:right;text-align:right;">'.$layout_stats.'</span>
-						<a href="'.$boardroot.'"><img src="/img/btn/parkcity.gif" style="width:88px;height:31px;float:left;margin-right:4px;"></a>Acmlmboard XD 3.14<br>
-						<a href="#" onclick="enableMobileLayout(1); return false;" rel="nofollow">Enable mobile layout</a>';
+	$layout_footer = '
+<span style="float:right;text-align:right;">'.$layout_stats.'</span>
+<a href="'.URL_ROOT.'"><img src="/img/btn/parkcity.gif" style="width:88px;height:31px;float:left;margin-right:4px;"></a>Acmlmboard XD 3.14<br>
+<a href="#" onclick="enableMobileLayout(1); return false;" rel="nofollow">Enable mobile layout</a>';
 			
 // THEMES
 
@@ -197,6 +200,19 @@ include 'themes/'.$theme.'.php';
 $layout_css = $themecode[$theme];
 if($mobileLayout) $layout_css .= file_get_contents('css/mobile.css');
 $layout_css .= htmlspecialchars($loguser['css']);
+
+/*
+$themefile = 'themes/'.$theme.'/style.css';
+if(!file_exists($themefile))
+	$themefile = 'themes/'.$theme.'/style.php';
+
+$layout_css = '<link href="'.$themefile.'" rel="stylesheet" id="theme_css">';
+
+if($mobileLayout)
+	$layout_css .= '<link href="'.URL_ROOT.'css/mobile.css" rel="stylesheet">';
+if($loguser['css'])
+	$layout_css .= '<style>'.htmlspecialchars($loguser['css']).'</style>';
+*/
 
 ?>
 <!DOCTYPE html>
@@ -235,7 +251,7 @@ $layout_css .= htmlspecialchars($loguser['css']);
 		<table class="outline margin center" id="header">
 			<tr class="cell0">
 				<td>
-					<a href="/"><img id="theme_banner" src="<?=$boardroot.$banners[$banner];?>" alt="<?=BOARD_NAME;?>"></a>
+					<a href="<?=URL_ROOT?>"><img id="theme_banner" src="<?=$boardroot.$banners[$banner];?>" alt="<?=Settings::get('boardname');?>"></a>
 				</td>
 			</tr>
 			<tr class="cell1">

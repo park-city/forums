@@ -1,6 +1,7 @@
 <?php
 header('Content-type: application/rss+xml');
-define('DINNER', 1);
+define('DINNER', 'BLASTER');
+
 // Original by Arisotura
 // Fucked up by Kaj
 
@@ -14,6 +15,8 @@ function fixyoutube($m)
 }
 
 require(__DIR__.'/lib/common.php');
+
+if(!Settings::get('rssTitle')) die();
 
 $fid = (int)$_GET['fid'];
 
@@ -38,8 +41,8 @@ if($fid)
 }
 else
 {
-	$title = RSS_TITLE;
-	$desc = RSS_DESC;
+	$title = Settings::get('rssTitle');
+	$desc = Settings::get('rssDesc');
 }
 
 $url = "http".($ishttps?'s':'')."://{$_SERVER['SERVER_NAME']}{$serverport}";
@@ -56,7 +59,7 @@ print '<?xml version="1.0" encoding="UTF-8"?>';
 		<atom:link href="<?php echo htmlspecialchars($fullurl); ?>/rss.php" rel="self" type="application/rss+xml" />
 
 <?php
-
+// atom nua
 if($fid)
 {
 	$entries = Query("	SELECT 

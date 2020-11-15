@@ -2,6 +2,7 @@
 	<tr><th>Admin</th></tr>
 	<tr><td>
 		<ul>
+			<?=actionLinkTagItem('Edit settings', 'editsettings');?>
 			<li><a href="/?page=editfora">Edit forums</a></li>
 			<li><a href="/?page=editsmilies">Edit smilies</a></li>
 			<li><a href="/?page=log">Log</a></li>
