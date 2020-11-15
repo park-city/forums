@@ -45,7 +45,7 @@ function actionLink($action, $id="", $args="", $urlname="")
 
 	$res = "";
 
-	if($action != MAIN_PAGE)
+	if($action != Settings::get('mainPage'))
 		$res .= "&page=$action";
 
 	if($id != "")
@@ -126,7 +126,7 @@ function userLink($user, $showMinipic = false, $customID = false)
 	else
 	{
 		$minipic = "";
-		if($showMinipic || ALWAYS_MINIPIC)
+		if($showMinipic || Settings::get('alwaysminipic'))
 			$minipic = getMinipicTag($user);
 		
 		$fname = $minipic.$fname;
@@ -171,7 +171,7 @@ function makeThreadLink($thread)
 	$link = actionLinkTag($tags[0], "thread", $thread["id"], "", $tags[0]);
 	$tags = $tags[1];
 
-	if (TAGS_DIRECTION == 'Left')
+	if (Settings::get('tagsDirection') == 'Left')
 		return $tags." ".$link;
 	else
 		return $link." ".$tags;

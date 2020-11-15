@@ -47,15 +47,20 @@ $settings = array(
 		"default" => "10000",
 		"name" => "Viewcount report interval"
 	),*/
-	"ajax" => array (
+	"alwaysminipic" => array (
 		"type" => "boolean",
-		"default" => "1",
-		"name" => "Enable AJAX"
+		"default" => "0",
+		"name" => "Always show minipics"
 	),
 	"guestLayouts" => array (
 		"type" => "boolean",
 		"default" => "1",
 		"name" => "Show post layouts to guests"
+	),
+	"ajax" => array (
+		"type" => "boolean",
+		"default" => "1",
+		"name" => "Enable AJAX"
 	),
 	"enableSyndromes" => array(
 		"type" => "boolean",

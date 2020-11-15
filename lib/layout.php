@@ -232,7 +232,7 @@ function makeBreadcrumbs($crumbs)
 {
 	global $mainPage;
 	
-	$crumbs->addStart(new PipeMenuLinkEntry("Park City", $mainPage));
+	$crumbs->addStart(new PipeMenuLinkEntry(Settings::get('boardname'), Settings::get('mainPage')));
 	$crumbs->setClass("breadcrumbs");
 	
 	return $crumbs;

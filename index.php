@@ -83,7 +83,7 @@ setLastActivity();
 ob_start();
 ob_end_clean();
 
-$layout_title = BOARD_NAME;
+$layout_title = Settings::get('boardname');
 if($title != "") $layout_title .= " &raquo; ".$title;
 
 // HEADER
