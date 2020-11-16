@@ -1,0 +1,93 @@
+@import url(../../css/common-dark.css);
+@import url(../../css/roundcorners.css);
+
+html
+{
+	background-color: #1d1d52;
+    background-image: url(parkcitybg.png);
+    background-repeat: repeat-x;
+    background-attachment: fixed;
+    background-size: contain;
+}
+
+body
+{
+	background: transparent;
+	font-family: "overpass", sans-serif;
+	font-size: 85%;
+	font-weight: 500;
+}
+
+.outline:not(.safe), table.post:not(.safe)
+{
+	background: #09091a;
+	border-radius: .5em;
+}
+
+.outline th:not(.safe)
+{
+	padding-top:6px;
+	padding-bottom:6px;
+	border-bottom: 2px solid #1a1a4a;
+}
+
+a:link,a:visited,a:active
+{
+	color: #7278fb;
+	text-decoration: none;
+	transition: color .2s ease;
+}
+
+a:hover { color: #fff; }
+
+/* input */
+
+input, textarea, select {
+	color: #fff;
+	background: transparent;
+	border: 1px solid #313131;
+	padding: 4px;
+}
+
+input:focus, textarea:focus, select:focus {
+	border: 1px solid #87e881;
+	outline: none;
+}
+
+button,
+input[type='submit']
+{
+	background: #5D5D5D;
+	border: 1px solid #646464;
+	color: #fff;
+	text-shadow: 1px 1px #000;
+}
+
+button:hover,
+input[type='submit']:hover {
+	background: #87e881;
+	border: 1px solid #87e881;
+}
+
+div#tabs button {
+	border-radius: 0px;
+	margin: 0px;
+	background: none;
+	border: 0px none;
+	color: #FFF;
+	height: 32px;
+	padding-left: 12px;
+	padding-right: 12px;
+	margin-bottom: 0px;
+}
+
+div#tabs button.selected {
+	border-bottom: 2px solid #87e881;
+	margin-bottom: 0px;
+	outline: none;
+}
+
+div#tabs button:active {
+	background: #87e881;
+	outline: none;
+}

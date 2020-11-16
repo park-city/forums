@@ -77,11 +77,11 @@ $settings = array(
 		"default" => "0",
 		"name" => "Enable wiki"
 	),
-	/*"defaultTheme" => array (
+	"defaultTheme" => array (
 		"type" => "theme",
 		"default" => "garbg",
 		"name" => "Default theme",
-	),*/
+	),
 	"floodProtectionInterval" => array (
 		"type" => "integer",
 		"default" => "10",
@@ -101,12 +101,12 @@ $settings = array(
 
 	"newsForum" => array (
 		"type" => "forum",
-		"default" => "1",
+		"default" => "7",
 		"name" => "News forum",
 	),
 	"trashForum" => array (
 		"type" => "forum",
-		"default" => "1",
+		"default" => "5",
 		"name" => "Trash forum",
 	),
 	

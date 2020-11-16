@@ -1,4 +1,5 @@
 <?php
+if(!defined('DINNER')) die();
 
 $title = "Edit thread";
 
@@ -91,9 +92,9 @@ if($canMod)
 	if($_GET['action'] == "edit" || $_GET['action'] == "delete" || $_GET['action'] == "trash")
 	{
 		if($_GET["action"] == "trash")
-			$_POST["moveTo"] = 5;
+			$_POST["moveTo"] = Settings::get('trashForum');
 		if($_GET["action"] == "delete")
-			$_POST["moveTo"] = 5;
+			$_POST["moveTo"] = Settings::get('trashForum');
 
 		if($thread["forum"] != $_POST["moveTo"])
 		{

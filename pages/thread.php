@@ -1,4 +1,6 @@
 <?php
+if(!defined('DINNER')) die();
+
 if(isset($_GET['pid']))
 {
 	header("HTTP/1.1 301 Moved Permanently");
@@ -76,7 +78,7 @@ if($loguserid)
 		else
 			$links -> add(new PipeMenuLinkEntry("Stick", "editthread", $tid, "action=stick&key=".$loguser['token'], "pushpin"));
 
-		if($forum['id'] != 5)
+		if($forum['id'] != Settings::get('trashForum'))
 			$links -> add(new PipeMenuLinkEntry("Trash", "editthread", $tid, "action=trash&key=".$loguser['token'], "trash"));
 	}
 	else if($thread['user'] == $loguserid)

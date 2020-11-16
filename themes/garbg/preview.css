@@ -1,0 +1,16 @@
+.safe.garbg { 
+	background: black url(bg.png);
+	color: #fff;
+	border-collapse: collapse;
+}
+.safe.garbg td, .safe.garbg th {
+	background: rgba(0, 22, 42, 0.85);
+	border: 1px solid #000212;
+}
+.safe.garbg .cell2 {
+	background: rgba(0, 38, 76, 0.85);
+}
+.safe.garbg th {
+	background: rgba(0, 49, 100, 0.85);
+	color: #eee;
+}

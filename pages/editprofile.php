@@ -1,4 +1,5 @@
 <?php
+if(!defined('DINNER')) die();
 
 if(!$loguserid)
 	Kill("You must be logged in to edit your profile.");
@@ -26,6 +27,9 @@ if($editUserMode && $user['powerlevel'] == 4 && $loguser['powerlevel'] != 4 && $
 
 AssertForbidden($editUserMode ? "editUser" : "editProfile");
 
+if($editUserMode) $title = 'Edit user';
+else $title = 'Edit profile';
+
 $crumbs = new PipeMenu();
 $crumbs->add(new PipeMenuLinkEntry("Members", "memberlist"));
 $crumbs->add(new PipeMenuHtmlEntry(userLink($user)));
@@ -48,7 +52,7 @@ foreach($timeformats as $format)
 
 $dispname = $user['displayname'] ? $user['displayname'] : $user['name'];
 
-$powerlevels = array(-1 => "-1 - Banned", "0 - Normal user", "1 - Local mod", "2 - Moderator", "3 - Administrator", "4 - Super Admin", "5 - uhh");
+$powerlevels = array(-1 => "-1 - Banned", "0 - Normal user", "1 - Local mod", "2 - Moderator", "3 - Administrator", "4 - Root", "5 - System");
 
 $general = array(
 	"appearance" => array(
@@ -191,17 +195,17 @@ $account = array(
 		),
 	),
 	"admin" => array(
-		"name" => __("Administrative stuff"),
+		"name" => "Administration",
 		"class" => "needpass",
 		"items" => array(
 			"powerlevel" => array(
-				"caption" => __("Power level"),
+				"caption" => "Power level",
 				"type" => "select",
 				"options" => $powerlevels,
 				"callback" => "HandlePowerlevel",
 			),
 			"globalblock" => array(
-				"caption" => __("Ban post layout"),
+				"caption" => "Ban post layout",
 				"type" => "checkbox",
 			),
 		),
@@ -214,14 +218,14 @@ $layout = array(
 		"items" => array(
 			"postheader" => array(
 				"caption" => "Post header",
-				"extra" => "Placed immediately before your post text. Putting anything in your post header will prevent themes from styling your posts.",
+				"extra" => "Put &lt;style&gt; tags here to pretty up your posts!",
 				"type" => "textarea",
 				"rows" => 16,
 			),
 			"signature" => array(
 				"caption" => "Signature",
 				"type" => "textarea",
-				"extra" => "Place immediately after your post text.",
+				"extra" => "Comes immediately after your post's contents.",
 				"rows" => 16,
 			),
 			"signsep" => array(
@@ -692,40 +696,69 @@ function HandlePowerlevel($field, $item)
  * -----------
  */
 
+$dir = "themes/";
 $themeList = "";
+$themes = array();
 
-foreach (glob("themes/*.php") as $pingas)
+if (is_dir($dir))
 {
-	$themename = array();
-	$themedesc = array();
-	$themecode = array();
-	$themeprev = array();
+    if ($dh = opendir($dir))
+    {
+        while (($file = readdir($dh)) !== false)
+        {
+            if(filetype($dir . $file) != "dir") continue;
+            if($file == ".." || $file == ".") continue;
+            $infofile = $dir.$file."/themeinfo.txt";
 
-    include $pingas;
-    
-    $themeKey = basename($pingas, '.php');
+            if(file_exists($infofile))
+            {
+		        $themeinfo = file_get_contents($infofile);
+		        $themeinfo = explode("\n", $themeinfo, 2);
+
+		        $themes[$file]["name"] = trim($themeinfo[0]);
+		        $themes[$file]["desc"] = trim($themeinfo[1]);
+		    }
+		    else
+		    {
+		        $themes[$file]["name"] = $file;
+		        $themes[$file]["desc"] = "";
+		    }
+        }
+        closedir($dh);
+    }
+}
+
+asort($themes);
+
+foreach($themes as $themeKey => $themeData)
+{
+	$themename = $themeData["name"];
+	$themedesc = $themeData["desc"];
 
 	$qCount = "select count(*) from {users} where theme='".$themeKey."'";
 	$numUsers = FetchResult($qCount);
-	
-	$themeList .= '<style>'.$themeprev[$themeKey].'</style>';
-	
+
 	if($themeKey == $user['theme'])
-		$selected = " checked=\"checked\"";
+		$selected = ' checked="checked"';
 	else
-		$selected = "";
+		$selected = '';
 	
+	if(file_exists($dir.$themeKey.'/preview.css'))
+		$themeList .= '<link rel="stylesheet" href="themes/'.$themeKey.'/preview.css">';
+	elseif(file_exists($dir.$themeKey.'/preview.php'))
+		$themeList .= '<link rel="stylesheet" href="themes/'.$themeKey.'/preview.php">';
+
 	$themeList .= '
 		<div style="display:inline-block;" class="theme">
-			<input style="display: none;" type="radio" name="theme" value="'.$themeKey.'"'.$selected.' id="'.$themeKey.'" onchange="ChangeTheme(this.value);">
-			<label style="display: inline-block; clear: left; padding: 0.5em; width: 260px; vertical-align: top" onmousedown="void();" for="'.$themeKey.'">
+			<input style="display:none;" type="radio" name="theme" value="'.$themeKey.'"'.$selected.' id="'.$themeKey.'" onchange="ChangeTheme(this.value);">
+			<label style="display:inline-block;clear:left;padding:0.5em;width:260px;vertical-align:top" onmousedown="void();" for="'.$themeKey.'">
 				<table class="safe '.$themeKey.'">
 					<tr>
-						<th class="safe" colspan=2>'.$themename[$themeKey].'</th>
+						<th class="safe" colspan=2>'.$themename.'</th>
 					</tr>
 					<tr>
 						<td class="safe cell2">&nbsp;</td>
-						<td class="safe cell0">'.$themedesc[$themeKey].'</td>
+						<td class="safe cell0">'.$themedesc.'</td>
 					</tr>
 					<tr>
 						<td class="safe cell2">&nbsp;</td>

@@ -1,10 +1,12 @@
 <?php
+if(!defined('DINNER')) die();
+
 $title = 'Home';
 
 $pl = $loguser['powerlevel'];
 if($pl < 0) $pl = 0;
 
-$rFora = Query("select * from {forums} where id = {0}", 7);
+$rFora = Query("select * from {forums} where id = {0}", Settings::get('newsForum'));
 
 if(NumRows($rFora))
 	$forum = Fetch($rFora);

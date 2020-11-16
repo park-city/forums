@@ -115,7 +115,7 @@ if($loguser)
 }
 else
 {
-	$loguser = array("name"=>"", "powerlevel"=>DEFAULT_GROUP, "theme"=>DEFAULT_THEME,
+	$loguser = array("name"=>"", "powerlevel"=>DEFAULT_GROUP, "theme"=>Settings::get('defaultTheme'),
 		"dateformat"=>Settings::get('dateformat'), "timeformat"=>Settings::get('timeformat'), "timezone"=>0, "blocklayouts"=>0,
 		'token'=>hash('sha1', rand()));
 	$loguserid = 0;

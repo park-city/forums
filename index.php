@@ -170,13 +170,13 @@ if ($crumbs || $links) {
 // FOOTER
 
 $statData = Fetch(Query("SELECT
-(SELECT COUNT(*) FROM {threads}) AS numThreads,
-(SELECT COUNT(*) FROM {posts}) AS numPosts,
-(SELECT COUNT(*) FROM {users}) AS numUsers,
-(select count(*) from {posts} where date > {0}) AS newToday,
-(select count(*) from {posts} where date > {1}) AS newLastHour,
-(select count(*) from {users} where lastposttime > {2}) AS numActive",
-time() - 86400, time() - 3600, time() - 1209600));
+	(SELECT COUNT(*) FROM {threads}) AS numThreads,
+	(SELECT COUNT(*) FROM {posts}) AS numPosts,
+	(SELECT COUNT(*) FROM {users}) AS numUsers,
+	(select count(*) from {posts} where date > {0}) AS newToday,
+	(select count(*) from {posts} where date > {1}) AS newLastHour,
+	(select count(*) from {users} where lastposttime > {2}) AS numActive",
+	time() - 86400, time() - 3600, time() - 1209600));
 
 $percent = $statData["numUsers"] ? ceil((100 / $statData["numUsers"]) * $statData["numActive"]) : 0;
 
@@ -193,15 +193,6 @@ else
 			
 // THEMES
 
-$themecode = array();
-
-include 'themes/'.$theme.'.php';
-
-$layout_css = $themecode[$theme];
-if($mobileLayout) $layout_css .= file_get_contents('css/mobile.css');
-$layout_css .= htmlspecialchars($loguser['css']);
-
-/*
 $themefile = 'themes/'.$theme.'/style.css';
 if(!file_exists($themefile))
 	$themefile = 'themes/'.$theme.'/style.php';
@@ -212,7 +203,6 @@ if($mobileLayout)
 	$layout_css .= '<link href="'.URL_ROOT.'css/mobile.css" rel="stylesheet">';
 if($loguser['css'])
 	$layout_css .= '<style>'.htmlspecialchars($loguser['css']).'</style>';
-*/
 
 ?>
 <!DOCTYPE html>
@@ -244,7 +234,8 @@ if($loguser['css'])
 	<link rel="manifest" href="site.webmanifest">
     <meta name="msapplication-TileColor" content="#603cba">
 	
-	<style id="theme_css"><?php print $layout_css; ?></style>
+	<?=$layout_css;?>
+	
 </head>
 <body<?php if($mobileLayout) print ' id="mobile"'; ?>>
 	<div class="container mcenter">

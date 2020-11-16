@@ -1,0 +1,11 @@
+.safe.cheese {
+	background: #05012E url('bg.png');
+	border-collapse: collapse;
+	color: #fff;
+}
+.safe.cheese td,.safe.cheese th {
+	background: #05012E;
+	border: 1px solid #1F6FA5;
+}
+.safe.cheese .cell2 { background: #080151; }
+.safe.cheese th { background: #0F4687; }

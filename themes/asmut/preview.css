@@ -1,0 +1,11 @@
+.safe.asmut {
+	background: #040420 url('back2c.png') fixed;
+	color: #fff; border-collapse: collapse;
+}
+.safe.asmut th {
+	background: url('backh.png') repeat-x;
+	background-size:100% 100%;
+	border: 1px solid #000;
+}
+.safe.asmut td { background: url('back2t2.png') fixed; border: 1px solid #000; }
+.safe.asmut .cell2 { background: url('back2t1.png') fixed; }
