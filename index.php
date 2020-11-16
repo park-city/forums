@@ -211,8 +211,8 @@ if($loguser['css'])
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title><?=$layout_title?></title>
-	<meta name="keywords" content="<?=META_TAGS;?>">
-	<meta name="description" content="<?=META_DESC;?>">
+	<meta name="keywords" content="<?=Settings::get('metaTags');?>">
+	<meta name="description" content="<?=Settings::get('metaDescription');?>">
 
 	<link href="<?=URL_ROOT;?>js/spectrum.css" rel="stylesheet">
 	<link href="<?=URL_ROOT;?>css/font-awesome.min.css" rel="stylesheet">
