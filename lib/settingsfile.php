@@ -20,33 +20,18 @@ $settings = array(
 	"dateformat" => array (
 		"type" => "text",
 		"default" => "m-d-y",
-		"name" => "Date format"
+		"name" => "Default date format"
 	),
 	"timeformat" => array (
 		"type" => "text",
 		"default" => "g:i A",
-		"name" => "Time format"
+		"name" => "Default time format"
 	),
 	"mainPage" => array (
 		"type" => "text",
 		"default" => "board",
 		"name" => "Main page"
 	),
-	/*"customTitleThreshold" => array (
-		"type" => "integer",
-		"default" => "100",
-		"name" => "Custom title threshold"
-	),*/
-	"oldThreadThreshold" => array (
-		"type" => "integer",
-		"default" => "3",
-		"name" => "Old thread threshold (months)"
-	),
-	/*"viewcountInterval" => array (
-		"type" => "integer",
-		"default" => "10000",
-		"name" => "Viewcount report interval"
-	),*/
 	"alwaysminipic" => array (
 		"type" => "boolean",
 		"default" => "0",
@@ -65,7 +50,8 @@ $settings = array(
 	"enableSyndromes" => array(
 		"type" => "boolean",
 		"default" => "1",
-		"name" => "Enable posting spree syndromes"
+		"name" => "Enable syndromes",
+		"help" => "User titles that appear during posting sprees"
 	),
 	"enableUploader" => array(
 		"type" => "boolean",

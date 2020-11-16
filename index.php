@@ -95,8 +95,10 @@ $layout_navigation  = actionLinkTagItem('Home', Settings::get('mainPage'));
 if(Settings::get('mainPage') != 'board')
 	$layout_navigation .= actionLinkTagItem('Forums', 'board');
 $layout_navigation .= actionLinkTagItem('Members', 'memberlist');
-$layout_navigation .= actionLinkTagItem('Latest posts', 'lastposts');
+$layout_navigation .= actionLinkTagItem('Feed', 'lastposts');
 $layout_navigation .= actionLinkTagItem('Ranks', 'ranks');
+$layout_navigation .= '<li><a href="https://library.park-city.club/">Library</a></li>';
+$layout_navigation .= '<li><a href="https://radio.park-city.club/">Radio</a></li>';
 $layout_navigation .= '<br>';
 
 if($loguserid)
