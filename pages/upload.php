@@ -1,5 +1,6 @@
 <?php
-
+if(!defined('DINNER')) die();
+if(!Settings::get('enableUploader')) header('Location: '.actionLink('404'));
 $title = 'Uploader';
 
 AssertForbidden("viewUploader");

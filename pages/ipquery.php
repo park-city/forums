@@ -1,7 +1,7 @@
 <?php
-
+if(!defined('DINNER')) die();
 if($loguser['powerlevel'] < 3)
-	Kill(__("You're not an administrator. There is nothing for you here."));
+	Kill(__("Access denied."));
 
 $ip = $_GET["id"];
 if(!filter_var($ip, FILTER_VALIDATE_IP))

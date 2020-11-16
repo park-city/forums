@@ -1,5 +1,5 @@
 <?php
-
+if(!defined('DINNER')) die();
 $ajaxPage = TRUE;
 
 if(isset($_GET['gfx']))

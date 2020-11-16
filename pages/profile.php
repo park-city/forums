@@ -1,4 +1,5 @@
 <?php
+if(!defined('DINNER')) die();
 AssertForbidden("viewProfile");
 
 if(isset($_POST['id']))

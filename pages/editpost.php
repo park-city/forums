@@ -1,5 +1,5 @@
 <?php
-
+if(!defined('DINNER')) die();
 $title = 'Edit post';
 
 if(!$loguserid)

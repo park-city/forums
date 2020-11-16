@@ -1,5 +1,5 @@
 <?php
-
+if(!defined('DINNER')) die();
 $title = 'Forums';
 
 if($loguserid && isset($_GET['action']) && $_GET['action'] == "markallread")

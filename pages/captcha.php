@@ -1,5 +1,5 @@
 <?php
-
+if(!defined('DINNER')) die();
 $ajaxPage = true;
 
 /* To install the captcha, download Securimage from

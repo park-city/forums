@@ -1,8 +1,5 @@
 <?php
-//  AcmlmBoard XD - The Records
-//  Access: all
-
-
+if(!defined('DINNER')) die();
 $title = __("Records");
 AssertForbidden("viewRecords");
 $crumbs = new PipeMenu();

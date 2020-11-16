@@ -1,5 +1,5 @@
 <?php
-
+if(!defined('DINNER')) die();
 $title = "New reply";
 
 if(!$loguserid) Kill("You must be logged in to post.");

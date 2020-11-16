@@ -1,5 +1,5 @@
 <?php
-
+if(!defined('DINNER')) die();
 $tag = $_GET["id"];
 $tagcode = '"['.$tag.']"';
 $forum = (int)$_GET["fid"];

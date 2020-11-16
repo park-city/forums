@@ -1,7 +1,5 @@
 <?php
-//  AcmlmBoard XD - Posts by user viewer
-//  Access: all
-
+if(!defined('DINNER')) die();
 AssertForbidden("listPosts");
 
 if(!isset($_GET['id']))

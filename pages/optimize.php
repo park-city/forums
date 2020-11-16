@@ -1,9 +1,9 @@
 <?php
-
+if(!defined('DINNER')) die();
 AssertForbidden("optimize");
 
 if($loguser['powerlevel'] < 3)
-	Kill(__("You're not an administrator. There is nothing for you here."));
+	Kill(__("Access denied."));
 
 $crumbs = new PipeMenu();
 $crumbs->add(new PipeMenuLinkEntry(__("Optimize tables"), "optimize"));

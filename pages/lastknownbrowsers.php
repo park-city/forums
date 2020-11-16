@@ -1,6 +1,6 @@
 <?php
-
-$title = "Everyone's personal information";
+if(!defined('DINNER')) die();
+$title = "User agents and IPs";
 
 if($loguser['powerlevel'] < 3)
 	Kill(__("no"));

@@ -1,4 +1,5 @@
 <?php
+if(!defined('DINNER')) die();
 $title = 'Search';
 $crumbs = new PipeMenu();
 $crumbs->add(new PipeMenuLinkEntry('Search', "search"));

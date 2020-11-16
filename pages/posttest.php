@@ -1,5 +1,5 @@
 <?php
-
+if(!defined('DINNER')) die();
 //$user['postheader'] = "";
 //$user['signature'] = "";
 if($loguserid)

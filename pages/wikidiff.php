@@ -1,8 +1,9 @@
 <?php
-
-require './lib/wiki.php';
-require './lib/Diff.php';
-require './lib/Diff/Renderer/inline.php';
+if(!defined('DINNER')) die();
+if(!Settings::get('enableWiki')) header('Location: '.actionLink('404'));
+require BOARD_ROOT.'lib/wiki.php';
+require BOARD_ROOT.'lib/diff.php';
+require BOARD_ROOT.'lib/Diff/Renderer/inline.php';
 
 ?>
 <style type="text/css">

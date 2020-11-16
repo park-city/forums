@@ -1,5 +1,5 @@
 <?php
-
+if(!defined('DINNER')) die();
 $title = "New thread";
 
 AssertForbidden("makeThread");

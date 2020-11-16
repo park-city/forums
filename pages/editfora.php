@@ -1,8 +1,8 @@
 <?php
-
+if(!defined('DINNER')) die();
 $title = __("Edit forums");
 
-if ($loguser['powerlevel'] < 3) Kill(__("no"));
+if ($loguser['powerlevel'] < 3) Kill('Access denied.');
 
 $crumbs = new PipeMenu();
 $crumbs->add(new PipeMenuLinkEntry(__("Edit forum list"), "editfora"));

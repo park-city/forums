@@ -1,4 +1,5 @@
 <?php
+if(!defined('DINNER')) die();
 $uid = (int)$_GET['id'];
 
 $rUser = Query("select * from {users} where id={0}", $uid);

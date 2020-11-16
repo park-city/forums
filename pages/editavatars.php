@@ -1,5 +1,5 @@
 <?php
-
+if(!defined('DINNER')) die();
 $title = "Mood avatars";
 
 $crumbs = new PipeMenu();

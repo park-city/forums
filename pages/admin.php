@@ -1,16 +1,25 @@
+<?php
+if(!defined('DINNER')) die();
+if($loguser['powerlevel'] < 3) header('Location: https://www.youtube.com/watch?v=DNm5eb97Y0g');
+
+$adminLinks = '';
+
+$adminLinks .= actionLinkTagItem('Edit settings', 'editsettings');
+$adminLinks .= actionLinkTagItem('Edit forums', 'editfora');
+$adminLinks .= actionLinkTagItem('Edit smilies', 'editsmilies');
+$adminLinks .= actionLinkTagItem('Log', 'log');
+$adminLinks .= actionLinkTagItem('Online users', 'online');
+$adminLinks .= actionLinkTagItem('User agents and IPs', 'lastknownbrowsers');
+$adminLinks .= actionLinkTagItem('Recalculate statistics', 'recalc');
+$adminLinks .= actionLinkTagItem('Optimize tables', 'optimize');
+$adminLinks .= actionLinkTagItem('Upgrade database', 'upgrade');
+
+?>
 <table class="outline margin mw700 mcenter">
 	<tr><th>Admin</th></tr>
 	<tr><td>
 		<ul>
-			<?=actionLinkTagItem('Edit settings', 'editsettings');?>
-			<li><a href="/?page=editfora">Edit forums</a></li>
-			<li><a href="/?page=editsmilies">Edit smilies</a></li>
-			<li><a href="/?page=log">Log</a></li>
-			<li><a href="/?page=online">Online users</a></li>
-			<li><a href="/?page=lastknownbrowsers">Everyone's personal information</a></li>
-			<li><a href="/?page=recalc">Recalculate statistics</a></li>
-			<li><a href="/?page=optimize">Optimize tables</a></li>
-			<li><a href="/?page=updateschema">Update schema</a></li>
+			<?=$adminLinks;?>
 		</ul>
 	</td></tr>
 </table>

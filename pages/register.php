@@ -1,4 +1,5 @@
 <?php
+if(!defined('DINNER')) die();
 
 $title = "Register";
 
@@ -59,7 +60,7 @@ if(isset($_POST['name']))
 		$newsalt = Shake();
 		$password = password_hash($_POST['pass'], PASSWORD_DEFAULT);
 
-		$rUsers = Query("insert into {users} (name, password, pss, regdate, lastactivity, lastip, email, theme) values ({0}, {1}, {2}, {3}, {3}, {4}, {5}, {6})", $_POST['name'], $password, $newsalt, time(), $_SERVER['REMOTE_ADDR'], $_POST['email'], "parkcity");
+		$rUsers = Query("insert into {users} (name, password, pss, regdate, lastactivity, lastip, email, theme) values ({0}, {1}, {2}, {3}, {3}, {4}, {5}, {6})", $_POST['name'], $password, $newsalt, time(), $_SERVER['REMOTE_ADDR'], $_POST['email'], Settings::get('defaultTheme'));
 		
 		$uid = insertId();
 		

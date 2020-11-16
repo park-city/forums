@@ -1,5 +1,5 @@
 <?php
-
+if(!defined('DINNER')) die();
 function validateConvertPassword($pass, $hash, $salt, $type)
 {
 	if($type == "IPB")

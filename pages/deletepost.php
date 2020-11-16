@@ -1,5 +1,5 @@
 <?php
-
+if(!defined('DINNER')) die();
 $ajaxPage = 1;
 
 if(!isset($_POST['id']))

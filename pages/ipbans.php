@@ -1,7 +1,5 @@
 <?php
-//  AcmlmBoard XD - IP ban management tool
-//  Access: administrators only
-
+if(!defined('DINNER')) die();
 $title = __("IP bans");
 
 AssertForbidden("editIPBans");

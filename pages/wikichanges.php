@@ -1,6 +1,7 @@
 <?php
-
-require './lib/wiki.php';
+if(!defined('DINNER')) die();
+if(!Settings::get('enableWiki')) header('Location: '.actionLink('404'));
+require BOARD_ROOT.'lib/wiki.php';
 
 $title = 'Wiki &raquo; Recent changes';
 

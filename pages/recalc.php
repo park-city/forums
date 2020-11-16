@@ -1,8 +1,8 @@
 <?php
+if(!defined('DINNER')) die();
 AssertForbidden("recalculate");
 
-if($loguser['powerlevel'] < 1)
-		Kill('then i freaked it');
+if($loguser['powerlevel'] < 3) Kill('Access denied.');
 
 $crumbs = new PipeMenu();
 $crumbs->add(new PipeMenuLinkEntry('Admin', "admin"));

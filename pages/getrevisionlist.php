@@ -1,5 +1,5 @@
 <?php
-
+if(!defined('DINNER')) die();
 $ajaxPage = true;
 
 $id = (int)$_GET["id"];

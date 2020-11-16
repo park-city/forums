@@ -1,7 +1,5 @@
 <?php
-//  AcmlmBoard XD - Realtime visitor statistics page
-//  Access: all
-
+if(!defined('DINNER')) die();
 $title = __("Online users");
 
 if($loguser['powerlevel'] < 1)

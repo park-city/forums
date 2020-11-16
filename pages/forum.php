@@ -1,4 +1,6 @@
 <?php
+if(!defined('DINNER')) die();
+
 if(!isset($_GET['id']))
 	Kill('Forum not found.');
 

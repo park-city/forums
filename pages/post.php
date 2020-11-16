@@ -1,5 +1,5 @@
 <?php
-
+if(!defined('DINNER')) die();
 $pid = (int)$_GET['id'];
 $rPost = Query("select * from {posts} where id={0}", $pid);
 if(NumRows($rPost))

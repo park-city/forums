@@ -1,5 +1,5 @@
 <?php
-
+if(!defined('DINNER')) die();
 $title = "Ranks";
 $crumbs = new PipeMenu();
 $crumbs->add(new PipeMenuLinkEntry($title, "ranks"));
