@@ -44,6 +44,13 @@ function usectime()
 if (!function_exists('password_hash'))
 	require_once('password.php');
 
+define('BANNED_GROUP', -1);
+define('DEFAULT_GROUP', 0);
+define('LMOD_GROUP', 1);
+define('MOD_GROUP', 2);
+define('ADMIN_GROUP', 3);
+define('ROOT_GROUP', 4);
+
 include(__DIR__."/config.php");
 include(__DIR__."/debug.php");
 include(__DIR__."/mysql.php");
