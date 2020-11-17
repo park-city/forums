@@ -249,7 +249,7 @@ function HandleExtraField($field, $item)
 for($i = 0; $i < 15; $i++)
 {
 	$personal['personal']['items']['extra'.$i.'t'] = array(
-		"caption" => format(__("Question #{0}"), $i+1),
+		"caption" => format(__("Label #{0}"), $i+1),
 		"type" => "text",
 		"value" => getSetting("profileExt".$i."t", true),
 		"callback" => "HandleExtraField",
@@ -258,7 +258,7 @@ for($i = 0; $i < 15; $i++)
 		"isCaption" => true,
 	);
 	$personal['personal']['items']['extra'.$i.'v'] = array(
-		"caption" => format(__("Answer #{0}"), $i+1),
+		"caption" => format(__("Data #{0}"), $i+1),
 		"type" => "text",
 		"value" => getSetting("profileExt".$i."v", true),
 		"callback" => "HandleExtraField",
