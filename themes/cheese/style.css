@@ -25,16 +25,12 @@ th:not(.safe)
 	background: #0F4687;
 }
 
-.cell0:not(.safe),
-.cell2:not(.safe),
-td.side:not(.safe),
-td.userlink:not(.safe),
-td.meta:not(.safe)
+td:not(.safe)
 {
 	background: #080151;
 }
 
-.cell1:not(.safe),
+.cell1:not(.safe), .cell1 td:not(.safe):not(.cell2),
 td.post:not(.safe)
 {
 	background: #05012E;

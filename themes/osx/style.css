@@ -20,19 +20,17 @@ th:not(.safe),.meta:not(.safe),.side.userlink:not(.safe)
 	background: linear-gradient(#c5c5c5, #969696);
     text-shadow: 0 1px rgba(255,255,255,0.25);
     box-shadow: inset 0 1px rgba(255,255,255,0.5), inset 0 -1px #404040;
-	padding-top: 9px;
-    padding-bottom: 9px;
+	padding-top: 4px;
+    padding-bottom: 4px;
 	border: 0;
 }
 
-tr:first-child th:first-child,
-tr:first-child td:first-child
+tr:first-child th:first-child
 {
 	border-top-left-radius: 4px;
 }
 
-tr:first-child th:last-child,
-tr:first-child td:last-child
+tr:first-child th:last-child
 {
 	border-top-right-radius: 4px;
 }
@@ -42,7 +40,7 @@ td:not(.safe)
 	background: #fff;
 }
 
-.cell2:not(.safe):not(:last-child)
+.cell2:not(.safe):not(:last-child),.side:not(.userlink):not(.safe)
 {
 	background-color: #d6dde5;
     border-right: 1px solid #8b8b8b;
@@ -58,11 +56,11 @@ td:not(.safe)
 	border-left: 0 none !important;
 }
 
-button,input[type=submit],.meta:not(.safe) a,.side.userlink:not(.safe) a
+button,input[type=submit],.meta:not(.safe) ul a
 {
 	color: black;
 	background-image: linear-gradient(#fefefe, #a9a9a9);
-	padding: 5px 8px 5px 8px;
+	padding: 3px 8px 3px 8px;
 	border: 1px solid #454545;
 	border-radius: 3px;
 	text-shadow: 0 1px rgba(255,255,255,0.25);

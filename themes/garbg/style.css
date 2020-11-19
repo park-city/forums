@@ -1,7 +1,7 @@
 @import url('../../css/common-dark.css');
 @import url('../../css/borders.css');
 
-body { background: black url(/img/garbg.png); }
+body { background: black url(bg.png); }
 
 .header0:not(.safe), .header1:not(.safe)
 {

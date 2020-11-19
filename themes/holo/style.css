@@ -60,7 +60,6 @@ td.side:not(.safe), td.post:not(.safe) {
 
 td.userlink:not(.safe), td.meta:not(.safe) {
 	background: #131313;
-	border-bottom: 2px solid #33B5E5;
 }
 
 /* input */
